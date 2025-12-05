@@ -2,7 +2,7 @@ import React from 'react';
 
 export default function Header() {
     return (
-        <header className="flex flex-col gap-2 text-left w-full">
+        <header className="flex flex-col gap-2 text-center items-center w-full">
             <h1 className="text-5xl md:text-7xl font-serif text-white tracking-tight">
                 Book Reccs
             </h1>

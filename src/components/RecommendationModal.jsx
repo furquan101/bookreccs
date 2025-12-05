@@ -2,38 +2,44 @@ import React, { useEffect } from 'react';
 import confetti from 'canvas-confetti';
 import { X, RefreshCw, RotateCcw, BookOpen, ExternalLink } from 'lucide-react';
 import { searchBooks } from '../services/googleBooks';
+import { searchBookVideos } from '../services/youtube';
+import VideoCarousel from './VideoCarousel';
 
 export default function RecommendationModal({ recommendation, onClose, onReset, onRetry }) {
     const [bookDetails, setBookDetails] = React.useState(null);
+    const [videos, setVideos] = React.useState([]);
+    const [videosLoading, setVideosLoading] = React.useState(true);
 
     useEffect(() => {
         if (!recommendation) return;
 
-        // Trigger confetti
-        const duration = 3000;
-        const end = Date.now() + duration;
+        // Trigger confetti only if NOT trending
+        if (!recommendation.isTrending) {
+            const duration = 3000;
+            const end = Date.now() + duration;
 
-        const frame = () => {
-            confetti({
-                particleCount: 2,
-                angle: 60,
-                spread: 55,
-                origin: { x: 0 },
-                colors: ['#ffffff', '#a8a8a8', '#555555']
-            });
-            confetti({
-                particleCount: 2,
-                angle: 120,
-                spread: 55,
-                origin: { x: 1 },
-                colors: ['#ffffff', '#a8a8a8', '#555555']
-            });
+            const frame = () => {
+                confetti({
+                    particleCount: 2,
+                    angle: 60,
+                    spread: 55,
+                    origin: { x: 0 },
+                    colors: ['#ffffff', '#a8a8a8', '#555555']
+                });
+                confetti({
+                    particleCount: 2,
+                    angle: 120,
+                    spread: 55,
+                    origin: { x: 1 },
+                    colors: ['#ffffff', '#a8a8a8', '#555555']
+                });
 
-            if (Date.now() < end) {
-                requestAnimationFrame(frame);
-            }
-        };
-        frame();
+                if (Date.now() < end) {
+                    requestAnimationFrame(frame);
+                }
+            };
+            frame();
+        }
 
         // Fetch cover and rating for the recommended book
         const fetchDetails = async () => {
@@ -45,16 +51,31 @@ export default function RecommendationModal({ recommendation, onClose, onReset, 
             }
         };
         fetchDetails();
+
+        // Fetch YouTube videos about the book
+        const fetchVideos = async () => {
+            if (recommendation?.title && recommendation?.author) {
+                setVideosLoading(true);
+                const videoResults = await searchBookVideos(
+                    recommendation.title,
+                    recommendation.author,
+                    6
+                );
+                setVideos(videoResults);
+                setVideosLoading(false);
+            }
+        };
+        fetchVideos();
     }, [recommendation]);
 
     if (!recommendation) return null;
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-300">
-            <div className="relative w-full max-w-lg bg-surface border border-gray-700 rounded-2xl p-6 md:p-10 shadow-2xl flex flex-col items-center text-center gap-6">
+            <div className="relative w-full max-w-4xl bg-surface border border-gray-700 rounded-2xl p-6 md:p-8 shadow-2xl flex flex-col items-center text-center gap-4 max-h-[90vh] overflow-y-auto">
                 <button
                     onClick={onClose}
-                    className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors"
+                    className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors z-10"
                 >
                     <X className="w-6 h-6" />
                 </button>
@@ -110,22 +131,27 @@ export default function RecommendationModal({ recommendation, onClose, onReset, 
                     View on Goodreads <ExternalLink className="w-3 h-3" />
                 </a>
 
-                <div className="flex flex-col sm:flex-row gap-3 w-full mt-4">
-                    <button
-                        onClick={onRetry}
-                        className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-white text-black rounded-full font-body font-medium hover:bg-gray-200 transition-colors"
-                    >
-                        <RefreshCw className="w-4 h-4" />
-                        Get Another
-                    </button>
-                    <button
-                        onClick={onReset}
-                        className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-transparent border border-gray-600 text-white rounded-full font-body font-medium hover:bg-gray-800 transition-colors"
-                    >
-                        <RotateCcw className="w-4 h-4" />
-                        Start Over
-                    </button>
-                </div>
+                {/* YouTube Video Carousel */}
+                <VideoCarousel videos={videos} isLoading={videosLoading} />
+
+                {!recommendation.isTrending && (
+                    <div className="flex flex-col sm:flex-row gap-3 w-full mt-4">
+                        <button
+                            onClick={onRetry}
+                            className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-white text-black rounded-full font-body font-medium hover:bg-gray-200 transition-colors"
+                        >
+                            <RefreshCw className="w-4 h-4" />
+                            Get Another
+                        </button>
+                        <button
+                            onClick={onReset}
+                            className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-transparent border border-gray-600 text-white rounded-full font-body font-medium hover:bg-gray-800 transition-colors"
+                        >
+                            <RotateCcw className="w-4 h-4" />
+                            Start Over
+                        </button>
+                    </div>
+                )}
             </div>
         </div>
     );

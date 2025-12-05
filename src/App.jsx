@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import Header from './components/Header';
 import BookInput from './components/BookInput';
-import FilterPills from './components/FilterPills';
-import SubmitButton from './components/SubmitButton';
+
 import TrendingSection from './components/TrendingSection';
+import FeatureSection from './components/FeatureSection';
 import RecommendationModal from './components/RecommendationModal';
 import { getRecommendation } from './services/gemini';
 import { Loader2 } from 'lucide-react';
@@ -57,6 +57,17 @@ function App() {
     setHistory([]);
   };
 
+  const handleTrendingBookClick = (book) => {
+    // Create a recommendation object from the trending book
+    const trendingRecommendation = {
+      title: book.title,
+      author: book.author,
+      reasoning: "This book is trending right now and highly popular among readers!",
+      isTrending: true
+    };
+    setRecommendation(trendingRecommendation);
+  };
+
   return (
     <div className="min-h-screen w-full flex flex-col items-center p-6 sm:p-8 bg-background text-white relative">
       {/* Loading Overlay */}
@@ -71,23 +82,26 @@ function App() {
         <Header />
 
         <div className="flex flex-col gap-6">
-          <BookInput selectedBooks={selectedBooks} setSelectedBooks={setSelectedBooks} />
-          <FilterPills activeFilters={activeFilters} toggleFilter={toggleFilter} />
+          <BookInput
+            selectedBooks={selectedBooks}
+            setSelectedBooks={setSelectedBooks}
+            activeFilters={activeFilters}
+            toggleFilter={toggleFilter}
+            onSubmit={handleGetRecommendation}
+            isLoading={isLoading}
+          />
 
           {error && (
             <div className="p-4 bg-red-900/30 border border-red-800 rounded-lg text-red-200 text-sm text-center">
               {error}
             </div>
           )}
-
-          <SubmitButton
-            disabled={selectedBooks.length < 2 || isLoading}
-            onClick={handleGetRecommendation}
-          />
         </div>
 
-        <TrendingSection />
+        <TrendingSection onBookClick={handleTrendingBookClick} />
       </main>
+
+      <FeatureSection />
 
       <RecommendationModal
         recommendation={recommendation}

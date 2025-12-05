@@ -3,7 +3,7 @@ import { searchBooks } from '../services/googleBooks';
 import { getTrendingBooks } from '../services/gemini';
 import { BookOpen, Star } from 'lucide-react';
 
-export default function TrendingSection() {
+export default function TrendingSection({ onBookClick }) {
     const [books, setBooks] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
 
@@ -55,15 +55,21 @@ export default function TrendingSection() {
 
     return (
         <div className="w-full flex flex-col gap-6 mt-8">
-            <h2 className="text-3xl md:text-4xl font-serif text-white">
-                Trending right now
-            </h2>
+            <div className="flex flex-col gap-1">
+                <h2 className="text-3xl md:text-4xl font-serif text-white">
+                    Trending right now
+                </h2>
+                <p className="text-white/60 font-sans text-sm">
+                    Curated by AI based on current popularity and literary discussions.
+                </p>
+            </div>
 
             <div className="w-full overflow-x-auto no-scrollbar pb-8 mask-linear-fade">
                 <div className="flex gap-6 px-1">
                     {books.map((book) => (
                         <div
                             key={book.id}
+                            onClick={() => onBookClick?.(book)}
                             className="relative shrink-0 w-[160px] md:w-[200px] aspect-[2/3] rounded-lg overflow-hidden group cursor-pointer transition-transform duration-300 hover:-translate-y-2 shadow-lg"
                         >
                             {book.cover ? (
