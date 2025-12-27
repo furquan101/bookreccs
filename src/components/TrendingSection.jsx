@@ -54,13 +54,13 @@ export default function TrendingSection({ onBookClick }) {
     }
 
     return (
-        <div className="w-full flex flex-col gap-6 mt-8">
+        <div id="trending" className="w-full flex flex-col gap-6 mt-8">
             <div className="flex flex-col gap-1">
                 <h2 className="text-3xl md:text-4xl font-serif text-white">
                     Trending right now
                 </h2>
                 <p className="text-white/60 font-sans text-sm">
-                    Curated by AI based on current popularity and literary discussions.
+                    Popular recommendations based on reading trends and discussions.
                 </p>
             </div>
 

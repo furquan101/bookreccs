@@ -4,5 +4,9 @@ import react from '@vitejs/plugin-react'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
-  base: '/bookreccs/',
+  base: process.env.NODE_ENV === 'production' ? '/bookreccs/' : '/',
+  server: {
+    host: '0.0.0.0',
+    port: 5173,
+  },
 })

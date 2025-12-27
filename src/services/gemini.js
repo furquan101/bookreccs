@@ -4,8 +4,13 @@ const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 
 export async function getRecommendation(selectedBooks, filters = [], excludeBooks = []) {
     if (!API_KEY) {
-        console.error("Missing Gemini API Key");
-        throw new Error("API Key missing");
+        console.error("Missing Gemini API Key - Check .env file has VITE_GEMINI_API_KEY set");
+        throw new Error("API Key missing - Please check your .env file");
+    }
+
+    // Validate API key format (Gemini keys typically start with AIza)
+    if (!API_KEY.startsWith('AIza')) {
+        console.warn("API Key format may be incorrect - Gemini keys typically start with 'AIza'");
     }
 
     try {
@@ -41,12 +46,25 @@ export async function getRecommendation(selectedBooks, filters = [], excludeBook
         return JSON.parse(jsonString);
     } catch (error) {
         console.error("Error getting recommendation:", error);
+        
+        // Provide more helpful error messages
+        if (error.message?.includes('API_KEY_INVALID') || error.message?.includes('401')) {
+            throw new Error("Invalid API key. Please check your VITE_GEMINI_API_KEY in .env file");
+        } else if (error.message?.includes('429') || error.message?.includes('quota') || error.message?.includes('Quota exceeded')) {
+            throw new Error("API quota exceeded. You've reached the free tier limit. Please wait a few minutes or check your billing plan at https://ai.dev/usage");
+        } else if (error.message?.includes('network') || error.message?.includes('fetch')) {
+            throw new Error("Network error. Please check your internet connection.");
+        }
+        
         throw error;
     }
 }
 
 export async function getTrendingBooks() {
-    if (!API_KEY) return [];
+    if (!API_KEY) {
+        console.warn("Gemini API key not found - trending books will use fallback");
+        return [];
+    }
 
     try {
         const genAI = new GoogleGenerativeAI(API_KEY);
@@ -70,6 +88,56 @@ export async function getTrendingBooks() {
         return JSON.parse(jsonString);
     } catch (error) {
         console.error("Error getting trending books:", error);
+        
+        // If quota exceeded, return empty array (fallback will be used)
+        if (error.message?.includes('429') || error.message?.includes('quota') || error.message?.includes('Quota exceeded')) {
+            console.warn("Gemini API quota exceeded - using fallback trending books");
+        }
+        
+        return [];
+    }
+}
+
+export async function getSimilarBooks(bookTitle, bookAuthor, excludeBooks = []) {
+    if (!API_KEY) {
+        console.warn("Gemini API key not found - similar books will not be available");
+        return [];
+    }
+
+    try {
+        const genAI = new GoogleGenerativeAI(API_KEY);
+        const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+
+        const excludeText = excludeBooks.length > 0 ? `Do NOT recommend these books: ${excludeBooks.join(", ")}.` : "";
+
+        const prompt = `
+      You are an expert book recommendation engine.
+      Based on the book "${bookTitle}" by ${bookAuthor}, recommend 3 similar books that share similar themes, writing style, genre, or reading experience.
+      ${excludeText}
+      Respond with ONLY valid JSON in this format:
+      [
+        { "title": "Book Title", "author": "Author Name" },
+        { "title": "Book Title", "author": "Author Name" },
+        { "title": "Book Title", "author": "Author Name" }
+      ]
+      Do not include markdown formatting or backticks.
+      Make sure the books are genuinely similar in style, themes, or genre to "${bookTitle}".
+    `;
+
+        const result = await model.generateContent(prompt);
+        const response = await result.response;
+        const text = response.text();
+
+        const jsonString = text.replace(/```json/g, '').replace(/```/g, '').trim();
+        return JSON.parse(jsonString);
+    } catch (error) {
+        console.error("Error getting similar books:", error);
+        
+        // If quota exceeded, return empty array
+        if (error.message?.includes('429') || error.message?.includes('quota') || error.message?.includes('Quota exceeded')) {
+            console.warn("Gemini API quota exceeded - similar books not available");
+        }
+        
         return [];
     }
 }

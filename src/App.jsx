@@ -5,6 +5,7 @@ import BookInput from './components/BookInput';
 import TrendingSection from './components/TrendingSection';
 import FeatureSection from './components/FeatureSection';
 import RecommendationModal from './components/RecommendationModal';
+import Footer from './components/Footer';
 import { getRecommendation } from './services/gemini';
 import { Loader2 } from 'lucide-react';
 
@@ -43,8 +44,10 @@ function App() {
       setRecommendation(result);
       setHistory(prev => [...prev, result.title]); // Add to history
     } catch (err) {
-      setError("Couldn't get a recommendation. Please try again.");
-      console.error(err);
+      // Use the error message from the service if available, otherwise default message
+      const errorMessage = err.message || "Couldn't get a recommendation. Please try again.";
+      setError(errorMessage);
+      console.error("Recommendation error:", err);
     } finally {
       setIsLoading(false);
     }
@@ -78,7 +81,7 @@ function App() {
         </div>
       )}
 
-      <main className="w-full max-w-3xl flex flex-col gap-8 mt-8 md:mt-16 pb-20">
+      <main data-book-input className="w-full max-w-3xl flex flex-col gap-8 mt-8 md:mt-16 pb-20">
         <Header />
 
         <div className="flex flex-col gap-6">
@@ -102,6 +105,8 @@ function App() {
       </main>
 
       <FeatureSection />
+
+      <Footer />
 
       <RecommendationModal
         recommendation={recommendation}
