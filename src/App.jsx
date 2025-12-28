@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import Header from './components/Header';
 import BookInput from './components/BookInput';
 
@@ -110,7 +110,7 @@ function App() {
 
       <RecommendationModal
         recommendation={recommendation}
-        onClose={() => setRecommendation(null)}
+        onClose={useCallback(() => setRecommendation(null), [])}
         onReset={handleReset}
         onRetry={handleGetRecommendation}
       />

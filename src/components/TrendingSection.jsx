@@ -61,7 +61,7 @@ export default function TrendingSection({ onBookClick }) {
                             scrollContainerRef.current.scrollBy({ left: 300, behavior: 'smooth' });
                         }
                     }}
-                    className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-[#0f0f0f] border border-gray-800 rounded-full p-2 hover:bg-[#181818] hover:border-gray-700 transition-all duration-300 opacity-80 hover:opacity-100"
+                    className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-[#0f0f0f] border border-gray-800 rounded-full p-3 hover:bg-[#181818] hover:border-gray-700 transition-all duration-300 opacity-80 hover:opacity-100 min-w-[44px] min-h-[44px] flex items-center justify-center"
                     aria-label="Scroll right"
                 >
                     <CaretRight className="w-5 h-5 text-white" weight="fill" />

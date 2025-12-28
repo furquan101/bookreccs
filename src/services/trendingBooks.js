@@ -48,21 +48,41 @@ const DIVERSE_FALLBACK_BOOKS = [
  */
 async function verifyBookAvailability(book) {
     try {
-        const results = await searchBooks(`${book.title} ${book.author}`);
+        // If book already has author, use it; otherwise search by title only
+        const searchQuery = book.author ? `${book.title} ${book.author}` : book.title;
+        const results = await searchBooks(searchQuery);
         if (results.length === 0) {
+            // If no results and we have original book data with author, return it
+            if (book.author && book.title) {
+                return {
+                    ...book,
+                    region: book.region || 'Unknown',
+                    source: book.source || 'unknown'
+                };
+            }
             return null;
         }
         
         const bookData = results[0];
+        // Preserve original author if Google Books doesn't have one
         // Additional verification could check language, but Google Books API
         // typically returns English books by default for English queries
         return {
             ...bookData,
+            author: bookData.author || book.author, // Prefer Google Books author, fallback to original
             region: book.region || 'Unknown',
             source: book.source || 'unknown'
         };
     } catch (error) {
         console.error(`Error verifying book ${book.title}:`, error);
+        // If we have original book data with author, return it as fallback
+        if (book.author && book.title) {
+            return {
+                ...book,
+                region: book.region || 'Unknown',
+                source: book.source || 'unknown'
+            };
+        }
         return null;
     }
 }
@@ -284,8 +304,12 @@ export async function getTrendingBooksFromMultipleSources() {
             });
         }
         
-        // Step 5: Convert map to array and ensure diversity
-        const allBooks = Array.from(bookMap.values());
+        // Step 5: Convert map to array and filter out books without proper author info
+        const allBooks = Array.from(bookMap.values())
+            .filter(book => book.author && 
+                           book.author.trim() !== '' && 
+                           book.author.toLowerCase() !== 'unknown author' &&
+                           book.author.toLowerCase() !== 'unknown');
         
         // Step 6: Ensure regional diversity
         const diverseBooks = ensureRegionalDiversity(allBooks, 6);
@@ -305,7 +329,13 @@ export async function getTrendingBooksFromMultipleSources() {
             verifyBookAvailability(book)
         );
         const fallbackResults = await Promise.all(fallbackPromises);
-        return fallbackResults.filter(book => book !== null);
+        return fallbackResults.filter(book => 
+            book !== null && 
+            book.author && 
+            book.author.trim() !== '' && 
+            book.author.toLowerCase() !== 'unknown author' &&
+            book.author.toLowerCase() !== 'unknown'
+        );
     }
 }
 

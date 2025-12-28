@@ -16,9 +16,21 @@ export default function RecommendationModal({ recommendation, onClose, onReset, 
     const [similarBooksDetails, setSimilarBooksDetails] = React.useState([]);
     const [bookSummary, setBookSummary] = React.useState(null);
     const [summaryLoading, setSummaryLoading] = React.useState(false);
+    const similarBooksScrollRef = useRef(null);
+    const isMountedRef = useRef(true);
 
     useEffect(() => {
         if (!recommendation) return;
+        
+        // Reset loading states when new recommendation comes in
+        setVideosLoading(true);
+        setSimilarBooksLoading(true);
+        setBookDetails(null);
+        setVideos([]);
+        setSimilarBooks([]);
+        setSimilarBooksDetails([]);
+        setBookSummary(null);
+        isMountedRef.current = true;
 
         // Handle escape key to close modal
         const handleEscape = (e) => {
@@ -28,6 +40,9 @@ export default function RecommendationModal({ recommendation, onClose, onReset, 
         };
 
         document.addEventListener('keydown', handleEscape);
+        
+        // Store reference for cleanup
+        const escapeHandler = handleEscape;
 
         // Trigger confetti only if NOT trending
         if (!recommendation.isTrending) {
@@ -59,10 +74,19 @@ export default function RecommendationModal({ recommendation, onClose, onReset, 
 
         // Fetch cover and rating for the recommended book (prioritize cover)
         const fetchDetails = async () => {
-            if (recommendation?.title) {
+            if (!recommendation?.title || !isMountedRef.current) return;
+            
+            try {
                 const results = await searchBooks(`${recommendation.title} ${recommendation.author}`);
+                if (!isMountedRef.current) return;
+                
                 if (results.length > 0) {
                     const details = results[0];
+                    
+                    // Debug: Log if description is missing
+                    if (!details.description) {
+                        console.debug(`No description found for: ${details.title} by ${details.author}`);
+                    }
                     
                     // Set book details immediately to load cover ASAP
                     setBookDetails(details);
@@ -78,7 +102,7 @@ export default function RecommendationModal({ recommendation, onClose, onReset, 
                     }
                     
                     // Summarize description if available (do this after cover is set)
-                    if (details.description) {
+                    if (details.description && isMountedRef.current) {
                         setSummaryLoading(true);
                         try {
                             const summary = await summarizeBookDescription(
@@ -86,15 +110,34 @@ export default function RecommendationModal({ recommendation, onClose, onReset, 
                                 recommendation.title,
                                 recommendation.author
                             );
-                            setBookSummary(summary);
+                            if (isMountedRef.current && summary) {
+                                setBookSummary(summary);
+                            } else if (isMountedRef.current) {
+                                // If summary is empty/null, fallback to original description
+                                // bookDetails.description will be used as fallback in render
+                                setBookSummary(null);
+                            }
                         } catch (error) {
                             console.error("Error summarizing description:", error);
-                            // Fallback to original description
-                            setBookSummary(null);
+                            // Fallback to original description - bookDetails.description will be used
+                            if (isMountedRef.current) {
+                                setBookSummary(null);
+                            }
                         } finally {
-                            setSummaryLoading(false);
+                            if (isMountedRef.current) {
+                                setSummaryLoading(false);
+                            }
                         }
+                    } else if (isMountedRef.current) {
+                        // No description available from Google Books
+                        setBookSummary(null);
+                        setSummaryLoading(false);
                     }
+                }
+            } catch (error) {
+                console.error("Error fetching book details:", error);
+                if (isMountedRef.current) {
+                    setBookDetails(null);
                 }
             }
         };
@@ -102,43 +145,69 @@ export default function RecommendationModal({ recommendation, onClose, onReset, 
 
         // Fetch YouTube videos about the book
         const fetchVideos = async () => {
-            if (recommendation?.title && recommendation?.author) {
+            if (!recommendation?.title || !recommendation?.author || !isMountedRef.current) return;
+            
+            try {
                 setVideosLoading(true);
                 const videoResults = await searchBookVideos(
                     recommendation.title,
                     recommendation.author,
                     6
                 );
-                setVideos(videoResults);
-                setVideosLoading(false);
+                if (isMountedRef.current) {
+                    setVideos(videoResults || []);
+                    setVideosLoading(false);
+                }
+            } catch (error) {
+                console.error("Error fetching videos:", error);
+                if (isMountedRef.current) {
+                    setVideos([]);
+                    setVideosLoading(false);
+                }
             }
         };
         fetchVideos();
 
         // Fetch similar books
         const fetchSimilarBooks = async () => {
-            if (recommendation?.title && recommendation?.author) {
-                setSimilarBooksLoading(true);
-                try {
-                    const similar = await getSimilarBooks(
-                        recommendation.title,
-                        recommendation.author,
-                        [recommendation.title]
-                    );
-                    setSimilarBooks(similar);
-                    
-                    // Fetch book details for similar books
-                    if (similar.length > 0) {
-                        const detailsPromises = similar.map(async (book) => {
+            if (!recommendation?.title || !recommendation?.author || !isMountedRef.current) return;
+            
+            setSimilarBooksLoading(true);
+            try {
+                const similar = await getSimilarBooks(
+                    recommendation.title,
+                    recommendation.author,
+                    [recommendation.title]
+                );
+                
+                if (!isMountedRef.current) return;
+                
+                setSimilarBooks(similar || []);
+                
+                // Fetch book details for similar books
+                if (similar && similar.length > 0 && isMountedRef.current) {
+                    const detailsPromises = similar.map(async (book) => {
+                        try {
                             const results = await searchBooks(`${book.title} ${book.author}`);
                             return results.length > 0 ? { ...book, ...results[0] } : book;
-                        });
-                        const details = await Promise.all(detailsPromises);
+                        } catch (error) {
+                            console.error(`Error fetching details for ${book.title}:`, error);
+                            return book; // Return book without details on error
+                        }
+                    });
+                    const details = await Promise.all(detailsPromises);
+                    if (isMountedRef.current) {
                         setSimilarBooksDetails(details);
                     }
-                } catch (error) {
-                    console.error("Error fetching similar books:", error);
-                } finally {
+                }
+            } catch (error) {
+                console.error("Error fetching similar books:", error);
+                if (isMountedRef.current) {
+                    setSimilarBooks([]);
+                    setSimilarBooksDetails([]);
+                }
+            } finally {
+                if (isMountedRef.current) {
                     setSimilarBooksLoading(false);
                 }
             }
@@ -146,9 +215,10 @@ export default function RecommendationModal({ recommendation, onClose, onReset, 
         fetchSimilarBooks();
 
         return () => {
-            document.removeEventListener('keydown', handleEscape);
+            isMountedRef.current = false;
+            document.removeEventListener('keydown', escapeHandler);
         };
-    }, [recommendation, onClose]);
+    }, [recommendation, onClose]); // Keep onClose but it should be stable
 
     if (!recommendation) return null;
 
@@ -163,7 +233,7 @@ export default function RecommendationModal({ recommendation, onClose, onReset, 
             >
                 <button
                     onClick={onClose}
-                    className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors z-10 p-2 -mt-2 -mr-2"
+                    className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors z-10 p-3 -mt-2 -mr-2 min-w-[44px] min-h-[44px] flex items-center justify-center"
                     aria-label="Close recommendation modal"
                 >
                     <X className="w-6 h-6" />
@@ -241,11 +311,12 @@ export default function RecommendationModal({ recommendation, onClose, onReset, 
                                 </p>
                             </div>
                         </div>
-                    ) : bookDetails?.description ? (
+                    ) : (bookDetails?.description && bookDetails.description.trim().length > 0) ? (
                         <div className="w-full px-6">
                             <div className="bg-[#181818] rounded-lg border border-gray-800 p-4 hover:border-gray-700 transition-all duration-300">
                                 <p className="text-white/80 font-sans text-base leading-relaxed text-center line-clamp-4">
-                                    {bookDetails.description.replace(/<[^>]*>/g, '').substring(0, 300)}...
+                                    {bookDetails.description.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').trim().substring(0, 300)}
+                                    {bookDetails.description.replace(/<[^>]*>/g, '').trim().length > 300 ? '...' : ''}
                                 </p>
                             </div>
                         </div>
@@ -257,7 +328,7 @@ export default function RecommendationModal({ recommendation, onClose, onReset, 
                     href={`https://www.goodreads.com/search?q=${encodeURIComponent(recommendation.title + ' ' + recommendation.author)}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-sm text-gray-300 hover:text-white font-sans flex items-center justify-center gap-2 transition-colors bg-[#181818] border border-gray-800 hover:border-gray-700 rounded-full px-4 py-2"
+                    className="text-sm text-gray-300 hover:text-white font-sans flex items-center justify-center gap-2 transition-colors bg-[#181818] border border-gray-800 hover:border-gray-700 rounded-full px-4 py-3 min-h-[44px]"
                 >
                     <svg 
                         className="w-4 h-4" 

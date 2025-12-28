@@ -25,35 +25,43 @@ export async function searchBooks(query) {
 
         if (!data.items) return [];
 
-        return data.items.map(item => {
-            const volumeInfo = item.volumeInfo;
-            // Prioritize higher quality images: large > medium > small > thumbnail > smallThumbnail
-            const coverUrl = volumeInfo.imageLinks?.large || 
-                            volumeInfo.imageLinks?.medium || 
-                            volumeInfo.imageLinks?.small || 
-                            volumeInfo.imageLinks?.thumbnail || 
-                            volumeInfo.imageLinks?.smallThumbnail || 
-                            null;
-            
-            // Use the cover URL directly - Google Books URLs are reliable
-            const cover = coverUrl || null;
-            
-            // Debug: Log if no cover found
-            if (!cover) {
-                console.debug(`No cover image for: ${volumeInfo.title}`);
-            }
-            
-            return {
-                id: item.id,
-                title: volumeInfo.title,
-                author: volumeInfo.authors ? volumeInfo.authors[0] : 'Unknown Author',
-                cover: cover,
-                description: volumeInfo.description || null,
-                publishedDate: volumeInfo.publishedDate,
-                rating: volumeInfo.averageRating || null,
-                ratingsCount: volumeInfo.ratingsCount || null
-            };
-        });
+        return data.items
+            .map(item => {
+                const volumeInfo = item.volumeInfo;
+                
+                // Skip books without authors to avoid showing "Unknown Author"
+                if (!volumeInfo.authors || volumeInfo.authors.length === 0) {
+                    return null;
+                }
+                
+                // Prioritize higher quality images: large > medium > small > thumbnail > smallThumbnail
+                const coverUrl = volumeInfo.imageLinks?.large || 
+                                volumeInfo.imageLinks?.medium || 
+                                volumeInfo.imageLinks?.small || 
+                                volumeInfo.imageLinks?.thumbnail || 
+                                volumeInfo.imageLinks?.smallThumbnail || 
+                                null;
+                
+                // Use the cover URL directly - Google Books URLs are reliable
+                const cover = coverUrl || null;
+                
+                // Debug: Log if no cover found
+                if (!cover) {
+                    console.debug(`No cover image for: ${volumeInfo.title}`);
+                }
+                
+                return {
+                    id: item.id,
+                    title: volumeInfo.title,
+                    author: volumeInfo.authors[0],
+                    cover: cover,
+                    description: volumeInfo.description || null,
+                    publishedDate: volumeInfo.publishedDate,
+                    rating: volumeInfo.averageRating || null,
+                    ratingsCount: volumeInfo.ratingsCount || null
+                };
+            })
+            .filter(book => book !== null); // Remove null entries
     } catch (error) {
         console.error('Error searching books:', error);
         return [];
