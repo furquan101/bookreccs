@@ -71,12 +71,31 @@ export async function getTrendingBooks() {
         const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
         const prompt = `
-      List 6 currently trending or highly popular fiction books (bestsellers, viral hits, or critically acclaimed) from the last 1-2 years.
+      You are a book recommendation expert. List 8 currently trending or highly popular fiction books from the last 1-2 years that meet these criteria:
+
+      REGIONAL DIVERSITY (REQUIRED):
+      - Include at least 1-2 books from each region: Middle East, Pakistan, Malaysia, Japan, Korea
+      - Authors should be from these regions or write about these regions
+      - Ensure geographic and cultural diversity
+
+      LANGUAGE REQUIREMENT:
+      - All books MUST be available in English (original or translated)
+      - Prioritize English translations of originally non-English works
+      - Only include books that are actually published and available
+
+      QUALITY CRITERIA:
+      - Bestsellers, critically acclaimed, or viral hits
+      - Books that have gained international recognition
+      - Mix of genres: literary fiction, contemporary, historical fiction, magical realism
+      - Recent publications (2023-2025) or recent translations
+
       Respond with ONLY valid JSON in this format:
       [
-        { "title": "Book Title", "author": "Author Name" },
+        { "title": "Book Title", "author": "Author Name", "region": "Region Name" },
         ...
       ]
+
+      Ensure diversity across regions and include books that are actually trending in 2024-2025.
       Do not include markdown formatting or backticks.
     `;
 
@@ -112,10 +131,12 @@ export async function getSimilarBooks(bookTitle, bookAuthor, excludeBooks = []) 
 
         const prompt = `
       You are an expert book recommendation engine.
-      Based on the book "${bookTitle}" by ${bookAuthor}, recommend 3 similar books that share similar themes, writing style, genre, or reading experience.
+      Based on the book "${bookTitle}" by ${bookAuthor}, recommend 4-5 similar books that share similar themes, writing style, genre, or reading experience.
       ${excludeText}
       Respond with ONLY valid JSON in this format:
       [
+        { "title": "Book Title", "author": "Author Name" },
+        { "title": "Book Title", "author": "Author Name" },
         { "title": "Book Title", "author": "Author Name" },
         { "title": "Book Title", "author": "Author Name" },
         { "title": "Book Title", "author": "Author Name" }
@@ -139,5 +160,63 @@ export async function getSimilarBooks(bookTitle, bookAuthor, excludeBooks = []) 
         }
         
         return [];
+    }
+}
+
+/**
+ * Summarize book description into 2-3 plain English sentences
+ * Content principles: Clear, simple language that anyone can understand
+ */
+export async function summarizeBookDescription(description, bookTitle, bookAuthor) {
+    if (!API_KEY || !description) {
+        // Fallback: return first 2-3 sentences of cleaned description
+        const cleanDesc = description
+            .replace(/<[^>]*>/g, '')
+            .replace(/&nbsp;/g, ' ')
+            .replace(/&amp;/g, '&')
+            .trim();
+        
+        const sentences = cleanDesc.split(/[.!?]+/).filter(s => s.trim().length > 10);
+        return sentences.slice(0, 3).join('. ').trim() + (sentences.length > 3 ? '...' : '');
+    }
+
+    try {
+        const genAI = new GoogleGenerativeAI(API_KEY);
+        const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+
+        const prompt = `
+      Summarize this book description for "${bookTitle}" by ${bookAuthor} into exactly 2-3 sentences in plain English.
+      
+      Content principles:
+      - Use simple, clear language that anyone can understand
+      - Avoid jargon, complex terms, or literary criticism language
+      - Focus on what the book is about, not reviews or awards
+      - Write as if explaining to a friend
+      - Keep it concise: 2-3 sentences maximum
+      
+      Book description:
+      ${description.substring(0, 1000)}
+      
+      Respond with ONLY the summary text, no quotes, no markdown, no formatting. Just 2-3 plain English sentences.
+    `;
+
+        const result = await model.generateContent(prompt);
+        const response = await result.response;
+        const text = response.text().trim();
+        
+        // Clean up any markdown or quotes that might be added
+        return text.replace(/^["']|["']$/g, '').replace(/```/g, '').trim();
+    } catch (error) {
+        console.error("Error summarizing book description:", error);
+        
+        // Fallback: return first 2-3 sentences
+        const cleanDesc = description
+            .replace(/<[^>]*>/g, '')
+            .replace(/&nbsp;/g, ' ')
+            .replace(/&amp;/g, '&')
+            .trim();
+        
+        const sentences = cleanDesc.split(/[.!?]+/).filter(s => s.trim().length > 10);
+        return sentences.slice(0, 3).join('. ').trim() + (sentences.length > 3 ? '...' : '');
     }
 }

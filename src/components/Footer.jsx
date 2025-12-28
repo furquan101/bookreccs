@@ -10,7 +10,7 @@ export default function Footer() {
           rel="noopener noreferrer"
           className="text-white/80 hover:text-white font-sans text-sm md:text-base transition-colors"
         >
-          created by furquan ahmad
+          Created by Furquan Ahmad
         </a>
       </div>
     </footer>
