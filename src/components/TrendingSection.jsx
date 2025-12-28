@@ -55,7 +55,7 @@ export default function TrendingSection({ onBookClick }) {
 
     return (
         <div id="trending" className="w-full flex flex-col gap-6 mt-8">
-            <div className="flex flex-col gap-1">
+            <div className="flex flex-col gap-2">
                 <h2 className="text-3xl md:text-4xl font-serif text-white">
                     Trending right now
                 </h2>
