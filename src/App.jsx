@@ -1,8 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import Header from './components/Header';
 import BookInput from './components/BookInput';
-import HamburgerMenu from './components/HamburgerMenu';
-import MobileNavOverlay from './components/MobileNavOverlay';
 
 import TrendingSection from './components/TrendingSection';
 import FeatureSection from './components/FeatureSection';
@@ -85,20 +83,6 @@ function App() {
 
   return (
     <div className="min-h-screen w-full flex flex-col items-center p-6 sm:p-8 bg-background text-white relative overflow-x-hidden">
-      {/* Mobile Navigation Overlay */}
-      <MobileNavOverlay
-        isOpen={isMobileMenuOpen}
-        closeMenu={() => setIsMobileMenuOpen(false)}
-        links={navLinks}
-      />
-
-      {/* Hamburger Button - Fixed position on mobile */}
-      <div className="fixed top-6 right-6 z-50 md:hidden">
-        <HamburgerMenu
-          isOpen={isMobileMenuOpen}
-          toggleMenu={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-        />
-      </div>
 
       {/* Loading Overlay */}
       {isLoading && (
