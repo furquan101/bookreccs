@@ -1,6 +1,8 @@
 import React, { useState, useCallback } from 'react';
 import Header from './components/Header';
 import BookInput from './components/BookInput';
+import HamburgerMenu from './components/HamburgerMenu';
+import MobileNavOverlay from './components/MobileNavOverlay';
 
 import TrendingSection from './components/TrendingSection';
 import FeatureSection from './components/FeatureSection';
@@ -71,8 +73,33 @@ function App() {
     setRecommendation(trendingRecommendation);
   };
 
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  // Define navigation links
+  const navLinks = [
+    { name: 'Home', href: '/' },
+    { name: 'About', href: '#about' },
+    { name: 'Features', href: '#features' }, // Assuming FeatureSection has an id
+    { name: 'Get Started', href: '#book-input' } // Assuming BookInput area 
+  ];
+
   return (
-    <div className="min-h-screen w-full flex flex-col items-center p-6 sm:p-8 bg-background text-white relative">
+    <div className="min-h-screen w-full flex flex-col items-center p-6 sm:p-8 bg-background text-white relative overflow-x-hidden">
+      {/* Mobile Navigation Overlay */}
+      <MobileNavOverlay
+        isOpen={isMobileMenuOpen}
+        closeMenu={() => setIsMobileMenuOpen(false)}
+        links={navLinks}
+      />
+
+      {/* Hamburger Button - Fixed position on mobile */}
+      <div className="fixed top-6 right-6 z-50 md:hidden">
+        <HamburgerMenu
+          isOpen={isMobileMenuOpen}
+          toggleMenu={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+        />
+      </div>
+
       {/* Loading Overlay */}
       {isLoading && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex flex-col items-center justify-center gap-4">
@@ -81,7 +108,7 @@ function App() {
         </div>
       )}
 
-      <main data-book-input className="w-full max-w-3xl flex flex-col gap-8 mt-8 md:mt-16 pb-20">
+      <main id="book-input" data-book-input className="w-full max-w-3xl flex flex-col gap-8 mt-8 md:mt-16 pb-20">
         <Header />
 
         <div className="flex flex-col gap-6">
@@ -104,9 +131,13 @@ function App() {
         <TrendingSection onBookClick={handleTrendingBookClick} />
       </main>
 
-      <FeatureSection />
+      <section id="features">
+        <FeatureSection />
+      </section>
 
-      <Footer />
+      <section id="about">
+        <Footer />
+      </section>
 
       <RecommendationModal
         recommendation={recommendation}

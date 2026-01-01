@@ -13,6 +13,55 @@ import { getTrendingBooks } from './gemini';
 import { searchBooks } from './googleBooks';
 import { getNYTBestsellers } from './nytBooks';
 
+// Cache configuration
+const CACHE_KEY = 'trending_books_cache';
+const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+
+/**
+ * Get cached trending books if available and not expired
+ * Returns null if cache is expired or doesn't exist
+ */
+function getCachedTrendingBooks() {
+    try {
+        const cached = localStorage.getItem(CACHE_KEY);
+        if (!cached) return null;
+        
+        const { data, timestamp } = JSON.parse(cached);
+        const now = Date.now();
+        
+        // Check if cache is still valid (within 24 hours)
+        if (now - timestamp < CACHE_DURATION) {
+            console.log('Using cached trending books');
+            return data;
+        }
+        
+        // Cache expired, remove it
+        localStorage.removeItem(CACHE_KEY);
+        return null;
+    } catch (error) {
+        console.error('Error reading cache:', error);
+        localStorage.removeItem(CACHE_KEY);
+        return null;
+    }
+}
+
+/**
+ * Save trending books to cache with current timestamp
+ */
+function setCachedTrendingBooks(books) {
+    try {
+        const cacheData = {
+            data: books,
+            timestamp: Date.now()
+        };
+        localStorage.setItem(CACHE_KEY, JSON.stringify(cacheData));
+        console.log('Cached trending books for 24 hours');
+    } catch (error) {
+        console.error('Error saving cache:', error);
+        // If localStorage is full or unavailable, continue without caching
+    }
+}
+
 // Diverse fallback list with verified books from target regions
 const DIVERSE_FALLBACK_BOOKS = [
     // Middle East
@@ -169,13 +218,28 @@ function ensureRegionalDiversity(books, targetCount = 6) {
 /**
  * Main function: Get trending books from multiple sources
  * Why this approach works:
- * 1. Parallel fetching = faster performance
- * 2. Multiple sources = more accurate than single source
- * 3. Verification = only shows available books
- * 4. Scoring = prioritizes truly popular books
- * 5. Diversity enforcement = ensures regional representation
+ * 1. Caching = reduces API calls (only fetches once per 24 hours)
+ * 2. Parallel fetching = faster performance
+ * 3. Multiple sources = more accurate than single source
+ * 4. Verification = only shows available books
+ * 5. Scoring = prioritizes truly popular books
+ * 6. Diversity enforcement = ensures regional representation
+ * 
+ * @param {boolean} forceRefresh - If true, bypasses cache and fetches fresh data
  */
-export async function getTrendingBooksFromMultipleSources() {
+export async function getTrendingBooksFromMultipleSources(forceRefresh = false) {
+    // Check cache first - if valid and not forcing refresh, return cached data immediately
+    if (!forceRefresh) {
+        const cached = getCachedTrendingBooks();
+        if (cached) {
+            return cached;
+        }
+    } else {
+        // Clear cache if forcing refresh
+        localStorage.removeItem(CACHE_KEY);
+        console.log('Force refresh: fetching fresh trending books');
+    }
+    
     const verifiedBooks = [];
     const bookMap = new Map(); // Track books by title+author to avoid duplicates
     
@@ -304,12 +368,14 @@ export async function getTrendingBooksFromMultipleSources() {
             });
         }
         
-        // Step 5: Convert map to array and filter out books without proper author info
+        // Step 5: Convert map to array and filter out books without proper author info or cover images
         const allBooks = Array.from(bookMap.values())
             .filter(book => book.author && 
                            book.author.trim() !== '' && 
                            book.author.toLowerCase() !== 'unknown author' &&
-                           book.author.toLowerCase() !== 'unknown');
+                           book.author.toLowerCase() !== 'unknown' &&
+                           book.cover && 
+                           book.cover.trim() !== ''); // Only include books with cover images
         
         // Step 6: Ensure regional diversity
         const diverseBooks = ensureRegionalDiversity(allBooks, 6);
@@ -317,11 +383,23 @@ export async function getTrendingBooksFromMultipleSources() {
         // Step 7: Sort by score (highest first)
         diverseBooks.sort((a, b) => (b.score || 0) - (a.score || 0));
         
-        console.log(`Found ${diverseBooks.length} trending books from multiple sources`);
-        return diverseBooks.slice(0, 6); // Return top 6
+        const finalBooks = diverseBooks.slice(0, 6); // Return top 6
+        
+        // Cache the results for 24 hours
+        setCachedTrendingBooks(finalBooks);
+        
+        console.log(`Found ${finalBooks.length} trending books from multiple sources`);
+        return finalBooks;
         
     } catch (error) {
         console.error('Error in multi-source trending books:', error);
+        
+        // Check cache as fallback even on error
+        const cached = getCachedTrendingBooks();
+        if (cached) {
+            console.log('Using cached trending books as fallback after error');
+            return cached;
+        }
         
         // Fallback: Return verified diverse books
         console.log('Using diverse fallback list...');
@@ -329,13 +407,22 @@ export async function getTrendingBooksFromMultipleSources() {
             verifyBookAvailability(book)
         );
         const fallbackResults = await Promise.all(fallbackPromises);
-        return fallbackResults.filter(book => 
+        const filteredResults = fallbackResults.filter(book => 
             book !== null && 
             book.author && 
             book.author.trim() !== '' && 
             book.author.toLowerCase() !== 'unknown author' &&
-            book.author.toLowerCase() !== 'unknown'
+            book.author.toLowerCase() !== 'unknown' &&
+            book.cover && 
+            book.cover.trim() !== '' // Only include books with cover images
         );
+        
+        // Cache fallback results too (they're still valid for 24 hours)
+        if (filteredResults.length > 0) {
+            setCachedTrendingBooks(filteredResults);
+        }
+        
+        return filteredResults;
     }
 }
 

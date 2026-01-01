@@ -16,6 +16,7 @@ export default function TrendingSection({ onBookClick }) {
                 // - Verified book availability
                 // - Scoring system for accuracy
                 // - Regional diversity enforcement
+                // - Only includes books with cover images
                 const books = await getTrendingBooksFromMultipleSources();
                 setBooks(books);
             } catch (error) {

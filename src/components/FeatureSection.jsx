@@ -5,7 +5,7 @@ export default function FeatureSection() {
         <section id="about" className="w-screen -mx-6 sm:-mx-8 grid grid-cols-1 md:grid-cols-2 min-h-[600px] rounded-lg overflow-hidden">
             <div className="flex flex-col justify-center px-8 md:px-24 py-16 md:py-24 bg-black order-2 md:order-1">
                 <div className="max-w-xl">
-                    <h2 className="text-3xl md:text-5xl font-serif text-white leading-tight mb-6">
+                    <h2 className="text-3xl md:text-5xl font-serif text-white leading-[1.35] mb-6">
                         Books you'll actually finish.
                     </h2>
                     <div className="flex flex-col gap-4 text-gray-400 font-sans text-base md:text-lg leading-relaxed mb-8">
