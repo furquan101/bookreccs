@@ -1,15 +1,17 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { BookOpen, ArrowRight } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { BookOpen, ArrowRight, ArrowLeft } from 'lucide-react';
 import { getAllPopularBooks, getHighPriorityBooks } from '../data/popularBooks';
 import { titleToSlug } from '../utils/slugUtils';
 import SEOHead from './SEOHead';
+import Header from './Header';
 
 /**
  * Index page listing all "Books Like X" pages
  * This helps search engines discover all our SEO pages
  */
 export default function BooksLikeIndexPage() {
+    const navigate = useNavigate();
     const allBooks = getAllPopularBooks();
     const highPriorityBooks = getHighPriorityBooks();
     
@@ -36,7 +38,18 @@ export default function BooksLikeIndexPage() {
                 type="website"
             />
             <div className="min-h-screen w-full bg-background text-white">
-                <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 md:px-8 py-8 md:py-12">
+                <Header showTitle={false} />
+                {/* Back Arrow */}
+                <div className="fixed top-6 left-6 z-50">
+                    <button
+                        onClick={() => navigate('/')}
+                        className="bg-black/50 backdrop-blur-sm p-2 rounded-[7px] border border-white/10 text-white/80 hover:bg-white/10 transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
+                        aria-label="Go back"
+                    >
+                        <ArrowLeft className="w-5 h-5" />
+                    </button>
+                </div>
+                <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 md:px-8 py-8 md:py-12 pt-24">
                     {/* Header */}
                     <div className="text-center mb-12">
                         <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif text-white mb-4">

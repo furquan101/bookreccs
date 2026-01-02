@@ -87,14 +87,7 @@ export default function ReadingTastePage() {
                 {/* Back Arrow */}
                 <div className="fixed top-6 left-6 z-50">
                     <button
-                        onClick={() => {
-                            // Check if we came from the modal (via state) or directly
-                            if (location.state?.fromModal) {
-                                navigate(-1);
-                            } else {
-                                navigate('/');
-                            }
-                        }}
+                        onClick={() => navigate('/')}
                         className="bg-black/50 backdrop-blur-sm p-2 rounded-[7px] border border-white/10 text-white/80 hover:bg-white/10 transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
                         aria-label="Go back"
                     >

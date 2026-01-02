@@ -7,6 +7,7 @@ import { searchBooks } from '../services/googleBooks';
 import { searchBookVideos } from '../services/youtube';
 import { getSimilarBooks, summarizeBookDescription } from '../services/gemini';
 import { generateReadingTasteProfile } from '../services/readingTaste';
+import { titleToSlug } from '../utils/slugUtils';
 import VideoCarousel from './VideoCarousel';
 
 export default function RecommendationModal({ recommendation, onClose, onReset, onRetry, selectedBooks }) {
@@ -352,6 +353,7 @@ export default function RecommendationModal({ recommendation, onClose, onReset, 
                         View on Goodreads <ExternalLink className="w-3 h-3" />
                     </a>
                     
+                    {/* Show "See all similar books" for reading taste pages (with selectedBooks) */}
                     {tasteProfile && selectedBooks && selectedBooks.length >= 2 && (
                         <button
                             onClick={() => {
@@ -361,6 +363,21 @@ export default function RecommendationModal({ recommendation, onClose, onReset, 
                                         fromModal: true
                                     }
                                 });
+                                onClose();
+                            }}
+                            className="text-sm text-white/80 hover:text-white font-sans flex items-center justify-center gap-2 transition-all bg-[#181818] border border-[#3C3C3C] hover:border-white/40 hover:bg-white/5 rounded-full px-4 py-3 min-h-[44px] flex-1"
+                        >
+                            See all similar books
+                            <ArrowRight className="w-4 h-4" />
+                        </button>
+                    )}
+                    
+                    {/* Show "See all similar books" for trending books (links to Books Like X page) */}
+                    {recommendation.isTrending && (
+                        <button
+                            onClick={() => {
+                                const bookSlug = titleToSlug(recommendation.title);
+                                navigate(`/books-like/${bookSlug}`);
                                 onClose();
                             }}
                             className="text-sm text-white/80 hover:text-white font-sans flex items-center justify-center gap-2 transition-all bg-[#181818] border border-[#3C3C3C] hover:border-white/40 hover:bg-white/5 rounded-full px-4 py-3 min-h-[44px] flex-1"
