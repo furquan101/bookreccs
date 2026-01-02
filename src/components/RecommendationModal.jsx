@@ -278,7 +278,7 @@ export default function RecommendationModal({ recommendation, onClose, onReset, 
 
                     {/* Rating Display */}
                     {bookDetails?.rating && (
-                        <div className="flex items-center justify-center gap-2 mt-2 bg-gray-800/50 px-4 py-2 rounded-full border border-gray-700">
+                        <div className="flex items-center justify-center gap-2 mt-2 bg-gray-800/50 px-4 py-2 rounded-full border border-[#3C3C3C]">
                             <div className="flex text-yellow-500">
                                 {[...Array(5)].map((_, i) => (
                                     <svg key={i} className={`w-4 h-4 ${i < Math.round(bookDetails.rating) ? 'fill-current' : 'text-gray-600 fill-current'}`} viewBox="0 0 20 20">
@@ -295,7 +295,7 @@ export default function RecommendationModal({ recommendation, onClose, onReset, 
                     {/* Book Description */}
                     {summaryLoading ? (
                         <div className="w-full px-6">
-                            <div className="bg-[#181818] rounded-lg border border-gray-800 p-4">
+                            <div className="bg-[#181818] rounded-lg border border-[#3C3C3C] p-4">
                                 <div className="animate-pulse space-y-2">
                                     <div className="h-4 bg-gray-700 rounded w-3/4 mx-auto"></div>
                                     <div className="h-4 bg-gray-700 rounded w-full"></div>
@@ -305,7 +305,7 @@ export default function RecommendationModal({ recommendation, onClose, onReset, 
                         </div>
                     ) : bookSummary ? (
                         <div className="w-full px-6">
-                            <div className="bg-[#181818] rounded-lg border border-gray-800 p-4 hover:border-gray-700 transition-all duration-300">
+                            <div className="bg-[#181818] rounded-lg border border-[#3C3C3C] p-4 hover:border-[#3C3C3C] transition-all duration-300">
                                 <p className="text-white/80 font-sans text-base leading-relaxed text-center">
                                     {bookSummary}
                                 </p>
@@ -313,7 +313,7 @@ export default function RecommendationModal({ recommendation, onClose, onReset, 
                         </div>
                     ) : (bookDetails?.description && bookDetails.description.trim().length > 0) ? (
                         <div className="w-full px-6">
-                            <div className="bg-[#181818] rounded-lg border border-gray-800 p-4 hover:border-gray-700 transition-all duration-300">
+                            <div className="bg-[#181818] rounded-lg border border-[#3C3C3C] p-4 hover:border-[#3C3C3C] transition-all duration-300">
                                 <p className="text-white/80 font-sans text-base leading-relaxed text-center line-clamp-4">
                                     {bookDetails.description.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').trim().substring(0, 300)}
                                     {bookDetails.description.replace(/<[^>]*>/g, '').trim().length > 300 ? '...' : ''}
@@ -328,7 +328,7 @@ export default function RecommendationModal({ recommendation, onClose, onReset, 
                     href={`https://www.goodreads.com/search?q=${encodeURIComponent(recommendation.title + ' ' + recommendation.author)}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-sm text-gray-300 hover:text-white font-sans flex items-center justify-center gap-2 transition-colors bg-[#181818] border border-gray-800 hover:border-gray-700 rounded-full px-4 py-3 min-h-[44px]"
+                    className="text-sm text-gray-300 hover:text-white font-sans flex items-center justify-center gap-2 transition-colors bg-[#181818] border border-[#3C3C3C] hover:border-[#3C3C3C] rounded-full px-4 py-3 min-h-[44px]"
                 >
                     <svg 
                         className="w-4 h-4" 
@@ -353,7 +353,7 @@ export default function RecommendationModal({ recommendation, onClose, onReset, 
                         <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
                             {[...Array(5)].map((_, i) => (
                                 <div key={i} className="flex-shrink-0 w-[200px] animate-pulse">
-                                    <div className="bg-[#181818] rounded-lg overflow-hidden border border-gray-800">
+                                    <div className="bg-[#181818] rounded-lg overflow-hidden border border-[#3C3C3C]">
                                         <div className="w-[200px] h-[300px] bg-[#0f0f0f]" />
                                         <div className="pt-2 px-2 pb-1 space-y-2">
                                             <div className="h-3 bg-[#0f0f0f] rounded w-full" />
@@ -375,7 +375,7 @@ export default function RecommendationModal({ recommendation, onClose, onReset, 
                                     similarBooksScrollRef.current.scrollBy({ left: 250, behavior: 'smooth' });
                                 }
                             }}
-                            className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-[#0f0f0f] border border-gray-800 rounded-full p-2 hover:bg-[#181818] hover:border-gray-700 transition-all duration-300 opacity-80 hover:opacity-100"
+                            className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-[#0f0f0f] border border-[#3C3C3C] rounded-full p-2 hover:bg-[#181818] hover:border-[#3C3C3C] transition-all duration-300 opacity-80 hover:opacity-100"
                             aria-label="Scroll right"
                         >
                             <CaretRight className="w-5 h-5 text-white" weight="fill" />
@@ -389,7 +389,7 @@ export default function RecommendationModal({ recommendation, onClose, onReset, 
                                     rel="noopener noreferrer"
                                     className="flex-shrink-0 w-[200px] group"
                                 >
-                                    <div className="bg-[#181818] rounded-lg overflow-hidden border border-gray-800 hover:border-gray-700 transition-all duration-300 h-full flex flex-col">
+                                    <div className="bg-[#181818] rounded-lg overflow-hidden border border-[#3C3C3C] hover:border-[#3C3C3C] transition-all duration-300 h-full flex flex-col">
                                         <div className="relative w-[200px] h-[300px] bg-[#0f0f0f] overflow-hidden flex-shrink-0">
                                             {book.cover ? (
                                                 <>
@@ -456,7 +456,7 @@ export default function RecommendationModal({ recommendation, onClose, onReset, 
                         </button>
                         <button
                             onClick={onReset}
-                            className="w-full sm:w-auto sm:flex-1 flex items-center justify-center gap-2 px-8 py-3 bg-transparent border border-gray-800 text-white rounded-full font-sans font-medium hover:bg-[#181818] transition-colors"
+                            className="w-full sm:w-auto sm:flex-1 flex items-center justify-center gap-2 px-8 py-3 bg-transparent border border-[#3C3C3C] text-white rounded-full font-sans font-medium hover:bg-[#181818] transition-colors"
                         >
                             <RotateCcw className="w-4 h-4" />
                             Start Over

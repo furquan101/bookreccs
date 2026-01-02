@@ -2,8 +2,8 @@ import React from 'react';
 
 export default function Footer() {
   return (
-    <footer className="w-full border-t-[1px] border-white/10 pt-4 pb-1 mt-[100px]">
-      <div className="text-center">
+    <footer className="w-screen -mx-6 sm:-mx-8 border-t-[1px] border-white/10 pt-4 pb-1 mt-[100px]">
+      <div className="text-center px-6 sm:px-8">
         <a
           href="https://www.furquan101.com/"
           target="_blank"

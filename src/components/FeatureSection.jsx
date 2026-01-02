@@ -34,7 +34,7 @@ export default function FeatureSection() {
             <div className="relative w-full h-full min-h-[400px] order-1 md:order-2 overflow-hidden">
                 <img
                     src={`${import.meta.env.BASE_URL}book-reccs-cover.png`}
-                    alt="Book Reccs Cover"
+                    alt="Person holding Book Reccs book outdoors"
                     className="w-full h-full object-cover"
                 />
             </div>
