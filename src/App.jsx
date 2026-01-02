@@ -1,15 +1,22 @@
 import React, { useState, useCallback } from 'react';
+import { Routes, Route, useNavigate } from 'react-router-dom';
 import Header from './components/Header';
 import BookInput from './components/BookInput';
-
 import TrendingSection from './components/TrendingSection';
 import FeatureSection from './components/FeatureSection';
 import RecommendationModal from './components/RecommendationModal';
 import Footer from './components/Footer';
+import BookDetailPage from './components/BookDetailPage';
+import CategoryBooksPage from './components/CategoryBooksPage';
+import ReadingTastePage from './components/ReadingTastePage';
+import BooksLikePage from './components/BooksLikePage';
+import BooksLikeIndexPage from './components/BooksLikeIndexPage';
 import { getRecommendation } from './services/gemini';
+import { generateReadingTasteProfile } from './services/readingTaste';
 import { Loader2 } from 'lucide-react';
 
-function App() {
+function Home() {
+  const navigate = useNavigate();
   const [selectedBooks, setSelectedBooks] = useState([]);
   const [activeFilters, setActiveFilters] = useState(new Set());
   const [recommendation, setRecommendation] = useState(null);
@@ -82,7 +89,8 @@ function App() {
   ];
 
   return (
-    <div className="min-h-screen w-full flex flex-col items-center p-6 sm:p-8 bg-background text-white relative overflow-x-hidden">
+    <>
+      <div className="min-h-screen w-full flex flex-col items-center p-6 sm:p-8 bg-background text-white relative overflow-x-hidden">
 
       {/* Loading Overlay */}
       {isLoading && (
@@ -103,6 +111,17 @@ function App() {
             toggleFilter={toggleFilter}
             onSubmit={handleGetRecommendation}
             isLoading={isLoading}
+            onBookView={(book) => {
+              // Show book in modal when "View" is clicked from search
+              const bookRecommendation = {
+                title: book.title,
+                author: book.author,
+                reasoning: "Viewing book from search results",
+                isTrending: false,
+                skipConfetti: true
+              };
+              setRecommendation(bookRecommendation);
+            }}
           />
 
           {error && (
@@ -123,13 +142,28 @@ function App() {
         <Footer />
       </section>
 
-      <RecommendationModal
-        recommendation={recommendation}
-        onClose={useCallback(() => setRecommendation(null), [])}
-        onReset={handleReset}
-        onRetry={handleGetRecommendation}
-      />
-    </div>
+        <RecommendationModal
+          recommendation={recommendation}
+          onClose={useCallback(() => setRecommendation(null), [])}
+          onReset={handleReset}
+          onRetry={handleGetRecommendation}
+          selectedBooks={selectedBooks}
+        />
+      </div>
+    </>
+  );
+}
+
+function App() {
+  return (
+    <Routes>
+      <Route path="/" element={<Home />} />
+      <Route path="/book/:title/:author" element={<BookDetailPage />} />
+      <Route path="/best-books-for/:category" element={<CategoryBooksPage />} />
+      <Route path="/reading-taste/:profile" element={<ReadingTastePage />} />
+      <Route path="/books-like" element={<BooksLikeIndexPage />} />
+      <Route path="/books-like/:bookSlug" element={<BooksLikePage />} />
+    </Routes>
   );
 }
 

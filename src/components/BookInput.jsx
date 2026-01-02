@@ -59,7 +59,7 @@ const POPULAR_BOOKS = [
     { title: "1984", author: "George Orwell" },
 ];
 
-export default function BookInput({ selectedBooks, setSelectedBooks, activeFilters, toggleFilter, onSubmit, isLoading: parentLoading }) {
+export default function BookInput({ selectedBooks, setSelectedBooks, activeFilters, toggleFilter, onSubmit, isLoading: parentLoading, onBookView }) {
     const [query, setQuery] = useState('');
     const [results, setResults] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
@@ -181,7 +181,7 @@ export default function BookInput({ selectedBooks, setSelectedBooks, activeFilte
                 <div className="flex items-center gap-3 text-white/80 text-left">
                     <BookOpen className="w-5 h-5 shrink-0 text-white/60" />
                     <p className="font-sans text-base leading-relaxed">
-                        Tell us 2–5 books you've enjoyed, we'll recommend new ones you'll love.
+                        Tell us 2–5 books you've enjoyed, and we'll create your personalized reading taste page.
                     </p>
                 </div>
 
@@ -211,43 +211,59 @@ export default function BookInput({ selectedBooks, setSelectedBooks, activeFilte
                             {query.length >= 2 && results.length > 0 ? (
                                 // Search results
                                 results.map((book) => (
-                                    <button
+                                    <div
                                         key={book.id}
-                                        onClick={() => handleSelectBook(book)}
-                                        className="w-full flex items-center gap-3 p-3 hover:bg-white/10 transition-colors text-left border-b border-white/10 last:border-none"
+                                        className="w-full flex items-center gap-3 p-3 hover:bg-white/10 transition-colors border-b border-white/10 last:border-none group"
                                     >
-                                        {book.cover ? (
-                                            <>
-                                                <img 
-                                                    src={book.cover} 
-                                                    alt={book.title} 
-                                                    className="w-10 h-14 object-cover rounded shadow-sm"
-                                                    loading="eager"
-                                                    fetchPriority="high"
-                                                    onError={(e) => {
-                                                        e.target.style.display = 'none';
-                                                        const fallback = e.target.nextElementSibling;
-                                                        if (fallback) {
-                                                            fallback.style.display = 'flex';
-                                                        }
-                                                    }}
-                                                />
-                                                <div className="w-10 h-14 bg-white/10 rounded flex items-center justify-center hidden">
+                                        <button
+                                            onClick={() => handleSelectBook(book)}
+                                            className="flex-1 flex items-center gap-3 text-left"
+                                        >
+                                            {book.cover ? (
+                                                <>
+                                                    <img 
+                                                        src={book.cover} 
+                                                        alt={book.title} 
+                                                        className="w-10 h-14 object-cover rounded shadow-sm"
+                                                        loading="eager"
+                                                        fetchPriority="high"
+                                                        onError={(e) => {
+                                                            e.target.style.display = 'none';
+                                                            const fallback = e.target.nextElementSibling;
+                                                            if (fallback) {
+                                                                fallback.style.display = 'flex';
+                                                            }
+                                                        }}
+                                                    />
+                                                    <div className="w-10 h-14 bg-white/10 rounded flex items-center justify-center hidden">
+                                                        <BookOpen className="w-4 h-4 text-white/40" />
+                                                    </div>
+                                                </>
+                                            ) : (
+                                                <div className="w-10 h-14 bg-white/10 rounded flex items-center justify-center">
                                                     <BookOpen className="w-4 h-4 text-white/40" />
                                                 </div>
-                                            </>
-                                        ) : (
-                                            <div className="w-10 h-14 bg-white/10 rounded flex items-center justify-center">
-                                                <BookOpen className="w-4 h-4 text-white/40" />
+                                            )}
+                                            <div className="flex flex-col overflow-hidden">
+                                                <span className="text-sm font-sans text-white truncate">{book.title}</span>
+                                                <span className="text-xs font-sans text-white/60 truncate">{book.author}</span>
                                             </div>
+                                        </button>
+                                        {onBookView && (
+                                            <button
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    onBookView(book);
+                                                }}
+                                                className="opacity-0 group-hover:opacity-100 transition-opacity text-xs font-sans text-white/60 hover:text-white px-2 py-1"
+                                                title="View book details"
+                                            >
+                                                View
+                                            </button>
                                         )}
-                                        <div className="flex flex-col overflow-hidden">
-                                            <span className="text-sm font-sans text-white truncate">{book.title}</span>
-                                            <span className="text-xs font-sans text-white/60 truncate">{book.author}</span>
-                                        </div>
-                                    </button>
+                                    </div>
                                 ))
-                            ) : query.length === 0 && isFocused ? (
+                                    ) : query.length === 0 && isFocused ? (
                                 // Popular suggestions
                                 <>
                                     <div className="px-3 py-2 border-b border-white/10">
@@ -259,11 +275,14 @@ export default function BookInput({ selectedBooks, setSelectedBooks, activeFilte
                                         </div>
                                     ) : popularSuggestions.length > 0 ? (
                                         popularSuggestions.map((book) => (
-                                            <button
+                                            <div
                                                 key={book.id}
-                                                onClick={() => handleSelectBook(book)}
-                                                className="w-full flex items-center gap-3 p-3 hover:bg-white/10 transition-colors text-left border-b border-white/10 last:border-none"
+                                                className="w-full flex items-center gap-3 p-3 hover:bg-white/10 transition-colors border-b border-white/10 last:border-none group"
                                             >
+                                                <button
+                                                    onClick={() => handleSelectBook(book)}
+                                                    className="flex-1 flex items-center gap-3 text-left"
+                                                >
                                                 {book.cover ? (
                                                     <>
                                                         <img 
@@ -293,7 +312,20 @@ export default function BookInput({ selectedBooks, setSelectedBooks, activeFilte
                                                     <span className="text-sm font-sans text-white truncate">{book.title}</span>
                                                     <span className="text-xs font-sans text-white/60 truncate">{book.author}</span>
                                                 </div>
-                                            </button>
+                                                </button>
+                                                {onBookView && (
+                                                    <button
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            onBookView(book);
+                                                        }}
+                                                        className="opacity-0 group-hover:opacity-100 transition-opacity text-xs font-sans text-white/60 hover:text-white px-2 py-1"
+                                                        title="View book details"
+                                                    >
+                                                        View
+                                                    </button>
+                                                )}
+                                            </div>
                                         ))
                                     ) : null}
                                 </>
@@ -306,11 +338,11 @@ export default function BookInput({ selectedBooks, setSelectedBooks, activeFilte
                 {selectedBooks.length > 0 && (
                     <div className="flex flex-wrap gap-2">
                         {selectedBooks.map((book) => (
-                            <div key={book.id} className="flex items-center gap-2 bg-white text-black rounded-full px-3 py-1.5 animate-in fade-in zoom-in duration-200">
+                            <div key={book.id} className="flex items-center gap-2 border border-white/20 text-white rounded-full px-3 py-1.5 animate-in fade-in zoom-in duration-200 hover:border-white/40 hover:bg-white/5 transition-all">
                                 <span className="text-sm font-sans truncate max-w-[150px]">{book.title}</span>
                                 <button
                                     onClick={() => setSelectedBooks(prev => prev.filter(b => b.id !== book.id))}
-                                    className="text-black/60 hover:text-black transition-colors p-2 -mr-2 -my-2 min-w-[44px] min-h-[44px] flex items-center justify-center"
+                                    className="text-white/60 hover:text-white transition-colors p-2 -mr-2 -my-2 min-w-[44px] min-h-[44px] flex items-center justify-center"
                                     aria-label={`Remove ${book.title}`}
                                 >
                                     <X className="w-4 h-4" />
@@ -387,7 +419,7 @@ export default function BookInput({ selectedBooks, setSelectedBooks, activeFilte
                                         <button
                                             key={filter.id}
                                             onClick={() => toggleFilter(filter.id)}
-                                            className="px-3 py-2 rounded-full text-sm font-sans whitespace-nowrap transition-all duration-200 flex items-center gap-2 bg-purple-500/20 text-purple-200 border border-white/80 hover:bg-purple-500/30 min-h-[44px]"
+                                            className="px-3 py-1.5 rounded-full border border-white/20 text-sm font-sans whitespace-nowrap transition-all duration-200 flex items-center gap-2 text-white hover:border-white/40 hover:bg-white/5 min-h-[44px]"
                                         >
                                             <IconComponent className="w-4 h-4" weight="fill" />
                                             {filter.label}

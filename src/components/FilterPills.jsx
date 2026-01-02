@@ -134,7 +134,7 @@ export default function FilterPills({ activeFilters, toggleFilter }) {
                             <button
                                 key={filter.id}
                                 onClick={() => toggleFilter(filter.id)}
-                                className="px-4 py-1.5 rounded-full border text-sm font-body whitespace-nowrap transition-all duration-200 flex items-center gap-2 bg-white text-black border-white hover:bg-gray-100"
+                                className="px-4 py-1 rounded-full border border-white/20 text-sm font-sans whitespace-nowrap transition-all duration-200 flex items-center gap-2 text-white hover:border-white/40 hover:bg-white/5"
                             >
                                 <IconComponent className="w-4 h-4" weight="fill" />
                                 {filter.label}

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Menu, X } from 'lucide-react';
 
-export default function Header() {
+export default function Header({ showTitle = true }) {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const menuRef = useRef(null);
 
@@ -125,15 +125,17 @@ export default function Header() {
                 </div>
             </nav>
 
-            {/* Main Header */}
-            <header className="flex flex-col gap-2 text-center items-center w-full">
-                <h1 className="text-5xl md:text-7xl font-serif text-white tracking-tight">
-                    Book Reccs
-                </h1>
-                <p className="text-lg md:text-xl text-gray-400 font-body">
-                    Find your next favourite read
-                </p>
-            </header>
+            {/* Main Header - Only show on homepage */}
+            {showTitle && (
+                <header className="flex flex-col gap-2 text-center items-center w-full">
+                    <h1 className="text-5xl md:text-7xl font-serif text-white tracking-tight">
+                        Book Reccs
+                    </h1>
+                    <p className="text-lg md:text-xl text-gray-400 font-body">
+                        Find your next favourite read
+                    </p>
+                </header>
+            )}
         </>
     );
 }

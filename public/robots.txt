@@ -1,0 +1,13 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://bookreccs.netlify.app/sitemap.xml
+
+# Allow all pages
+Allow: /
+Allow: /books-like
+Allow: /books-like/*
+Allow: /best-books-for/*
+Allow: /book/*
+Allow: /reading-taste/*

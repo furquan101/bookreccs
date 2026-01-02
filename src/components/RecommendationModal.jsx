@@ -1,13 +1,17 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import confetti from 'canvas-confetti';
-import { X, RefreshCw, RotateCcw, BookOpen, ExternalLink } from 'lucide-react';
+import { X, BookOpen, ExternalLink, ArrowRight } from 'lucide-react';
 import { CaretRight } from '@phosphor-icons/react';
 import { searchBooks } from '../services/googleBooks';
 import { searchBookVideos } from '../services/youtube';
 import { getSimilarBooks, summarizeBookDescription } from '../services/gemini';
+import { generateReadingTasteProfile } from '../services/readingTaste';
 import VideoCarousel from './VideoCarousel';
 
-export default function RecommendationModal({ recommendation, onClose, onReset, onRetry }) {
+export default function RecommendationModal({ recommendation, onClose, onReset, onRetry, selectedBooks }) {
+    const navigate = useNavigate();
+    const [tasteProfile, setTasteProfile] = useState(null);
     const [bookDetails, setBookDetails] = React.useState(null);
     const [videos, setVideos] = React.useState([]);
     const [videosLoading, setVideosLoading] = React.useState(true);
@@ -30,7 +34,21 @@ export default function RecommendationModal({ recommendation, onClose, onReset, 
         setSimilarBooks([]);
         setSimilarBooksDetails([]);
         setBookSummary(null);
+        setTasteProfile(null);
         isMountedRef.current = true;
+
+        // Generate reading taste profile in the background (for "Learn More" link)
+        if (selectedBooks && selectedBooks.length >= 2) {
+            generateReadingTasteProfile(selectedBooks)
+                .then(profile => {
+                    if (isMountedRef.current) {
+                        setTasteProfile(profile);
+                    }
+                })
+                .catch(error => {
+                    console.error("Error generating taste profile:", error);
+                });
+        }
 
         // Handle escape key to close modal
         const handleEscape = (e) => {
@@ -44,8 +62,8 @@ export default function RecommendationModal({ recommendation, onClose, onReset, 
         // Store reference for cleanup
         const escapeHandler = handleEscape;
 
-        // Trigger confetti only if NOT trending
-        if (!recommendation.isTrending) {
+        // Trigger confetti only if NOT trending and NOT from View button
+        if (!recommendation.isTrending && !recommendation.skipConfetti) {
             const duration = 3000;
             const end = Date.now() + duration;
 
@@ -225,7 +243,7 @@ export default function RecommendationModal({ recommendation, onClose, onReset, 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-sm animate-in fade-in duration-300">
             <div 
-                className="relative w-full max-w-2xl md:max-w-3xl lg:max-w-4xl bg-[#0f0f0f] rounded-lg p-6 md:p-8 shadow-2xl flex flex-col items-center text-center gap-6 max-h-[90vh] overflow-y-auto scrollbar-hide mx-auto"
+                className="relative w-full max-w-2xl md:max-w-3xl lg:max-w-4xl bg-[#0f0f0f] rounded-lg p-6 md:p-8 shadow-2xl flex flex-col items-center text-center gap-6 max-h-[80vh] overflow-y-auto scrollbar-hide mx-auto"
                 role="dialog"
                 aria-modal="true"
                 aria-labelledby="recommendation-title"
@@ -323,23 +341,35 @@ export default function RecommendationModal({ recommendation, onClose, onReset, 
                     ) : null}
                 </div>
 
-                {/* External Link */}
-                <a
-                    href={`https://www.goodreads.com/search?q=${encodeURIComponent(recommendation.title + ' ' + recommendation.author)}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-sm text-gray-300 hover:text-white font-sans flex items-center justify-center gap-2 transition-colors bg-[#181818] border border-[#3C3C3C] hover:border-[#3C3C3C] rounded-full px-4 py-3 min-h-[44px]"
-                >
-                    <svg 
-                        className="w-4 h-4" 
-                        viewBox="0 0 24 24" 
-                        fill="currentColor"
-                        xmlns="http://www.w3.org/2000/svg"
+                {/* Action Buttons */}
+                <div className="flex flex-col sm:flex-row gap-3 w-full px-6">
+                    <a
+                        href={`https://www.goodreads.com/search?q=${encodeURIComponent(recommendation.title + ' ' + recommendation.author)}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm text-white/80 hover:text-white font-sans flex items-center justify-center gap-2 transition-all bg-[#181818] border border-[#3C3C3C] hover:border-white/40 hover:bg-white/5 rounded-full px-4 py-3 min-h-[44px] flex-1"
                     >
-                        <path d="M19 2H5c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V6h10v2z"/>
-                    </svg>
-                    View on Goodreads <ExternalLink className="w-3 h-3" />
-                </a>
+                        View on Goodreads <ExternalLink className="w-3 h-3" />
+                    </a>
+                    
+                    {tasteProfile && selectedBooks && selectedBooks.length >= 2 && (
+                        <button
+                            onClick={() => {
+                                navigate(`/reading-taste/${tasteProfile}`, {
+                                    state: { 
+                                        selectedBooks,
+                                        fromModal: true
+                                    }
+                                });
+                                onClose();
+                            }}
+                            className="text-sm text-white/80 hover:text-white font-sans flex items-center justify-center gap-2 transition-all bg-[#181818] border border-[#3C3C3C] hover:border-white/40 hover:bg-white/5 rounded-full px-4 py-3 min-h-[44px] flex-1"
+                        >
+                            See all similar books
+                            <ArrowRight className="w-4 h-4" />
+                        </button>
+                    )}
+                </div>
 
                 {/* YouTube Video Carousel */}
                 <VideoCarousel videos={videos} isLoading={videosLoading} />
@@ -348,7 +378,7 @@ export default function RecommendationModal({ recommendation, onClose, onReset, 
                 {similarBooksLoading ? (
                     <div className="w-full mt-8">
                         <h3 className="text-2xl md:text-3xl font-sans text-white mb-4 text-center">
-                            Similar reads
+                            A few similar books
                         </h3>
                         <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
                             {[...Array(5)].map((_, i) => (
@@ -367,7 +397,7 @@ export default function RecommendationModal({ recommendation, onClose, onReset, 
                 ) : similarBooksDetails.length > 0 ? (
                     <div className="w-full mt-8 relative">
                         <h3 className="text-2xl md:text-3xl font-sans text-white mb-4 text-center">
-                            Similar reads
+                            A few similar books
                         </h3>
                         <button
                             onClick={() => {
@@ -444,25 +474,6 @@ export default function RecommendationModal({ recommendation, onClose, onReset, 
                         </div>
                     </div>
                 ) : null}
-
-                {!recommendation.isTrending && (
-                    <div className="flex flex-col sm:flex-row gap-3 w-full max-w-md mt-4 justify-center items-center mx-auto">
-                        <button
-                            onClick={onRetry}
-                            className="w-full sm:w-auto sm:flex-1 flex items-center justify-center gap-2 px-8 py-3 bg-white text-black rounded-full font-sans font-medium hover:bg-gray-200 transition-colors"
-                        >
-                            <RefreshCw className="w-4 h-4" />
-                            Get Another
-                        </button>
-                        <button
-                            onClick={onReset}
-                            className="w-full sm:w-auto sm:flex-1 flex items-center justify-center gap-2 px-8 py-3 bg-transparent border border-[#3C3C3C] text-white rounded-full font-sans font-medium hover:bg-[#181818] transition-colors"
-                        >
-                            <RotateCcw className="w-4 h-4" />
-                            Start Over
-                        </button>
-                    </div>
-                )}
             </div>
         </div>
     );
