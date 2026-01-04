@@ -157,7 +157,6 @@ export default function BookInput({ selectedBooks, setSelectedBooks, activeFilte
     }, [query, isFocused]);
 
     const handleSelectBook = (book) => {
-        if (selectedBooks.length >= 5) return;
         if (selectedBooks.some(b => b.id === book.id)) return;
 
         setSelectedBooks([...selectedBooks, book]);
@@ -181,7 +180,7 @@ export default function BookInput({ selectedBooks, setSelectedBooks, activeFilte
                 <div className="flex items-center gap-3 text-white/80 text-left">
                     <BookOpen className="w-5 h-5 shrink-0 text-white/60" />
                     <p className="font-sans text-base leading-relaxed">
-                        Tell us 2–5 books you've enjoyed, and we'll create your personalized reading taste page.
+                        Tell us 2–3 books you liked and we'll suggest your next read.
                     </p>
                 </div>
 
