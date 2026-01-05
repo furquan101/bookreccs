@@ -11,6 +11,7 @@ import CategoryBooksPage from './components/CategoryBooksPage';
 import ReadingTastePage from './components/ReadingTastePage';
 import BooksLikePage from './components/BooksLikePage';
 import BooksLikeIndexPage from './components/BooksLikeIndexPage';
+import SEOTopicPage from './components/SEOTopicPage';
 import { getRecommendation } from './services/gemini';
 import { generateReadingTasteProfile } from './services/readingTaste';
 import { Loader2 } from 'lucide-react';
@@ -163,6 +164,7 @@ function App() {
       <Route path="/reading-taste/:profile" element={<ReadingTastePage />} />
       <Route path="/books-like" element={<BooksLikeIndexPage />} />
       <Route path="/books-like/:bookSlug" element={<BooksLikePage />} />
+      <Route path="/seo-topic/:topicSlug" element={<SEOTopicPage />} />
     </Routes>
   );
 }

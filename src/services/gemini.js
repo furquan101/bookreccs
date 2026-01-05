@@ -89,6 +89,14 @@ export async function getTrendingBooks() {
       - Mix of genres: literary fiction, contemporary, historical fiction, magical realism
       - Recent publications (2023-2025) or recent translations
 
+      EXCLUSIONS (DO NOT INCLUDE):
+      - Scientific or academic textbooks
+      - Academic research books
+      - Sexuality education books
+      - Educational textbooks
+      - Technical manuals
+      - Only include general fiction, literary fiction, and popular non-fiction (memoirs, biographies, general interest)
+
       Respond with ONLY valid JSON in this format:
       [
         { "title": "Book Title", "author": "Author Name", "region": "Region Name" },

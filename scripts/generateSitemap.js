@@ -7,6 +7,7 @@
 
 import { getAllPopularBooks, getAllBookSlugs } from '../src/data/popularBooks.js';
 import { getAllCategorySlugs } from '../src/data/categoryBooks.js';
+import { getAllSEOTopicSlugs } from '../src/data/seoTopics.js';
 import fs from 'fs';
 import path from 'path';
 
@@ -16,6 +17,7 @@ function generateSitemap() {
     const popularBooks = getAllPopularBooks();
     const bookSlugs = getAllBookSlugs();
     const categories = getAllCategorySlugs();
+    const seoTopics = getAllSEOTopicSlugs();
     
     let sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
@@ -66,6 +68,20 @@ function generateSitemap() {
 `;
     });
 
+    // Add SEO topic pages
+    sitemap += `
+  <!-- SEO Topic Pages -->
+`;
+    
+    seoTopics.forEach(topicSlug => {
+        sitemap += `  <url>
+    <loc>${BASE_URL}/seo-topic/${topicSlug}</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+`;
+    });
+
     sitemap += `</urlset>`;
     
     return sitemap;
@@ -76,5 +92,8 @@ const sitemapContent = generateSitemap();
 const sitemapPath = path.join(process.cwd(), 'public', 'sitemap.xml');
 fs.writeFileSync(sitemapPath, sitemapContent, 'utf8');
 
+const totalUrls = 1 + 1 + getAllCategorySlugs().length + getAllPopularBooks().length + getAllSEOTopicSlugs().length;
 console.log(`✅ Generated sitemap.xml with ${getAllPopularBooks().length} Books Like pages`);
-console.log(`✅ Total URLs: ${1 + 1 + getAllCategorySlugs().length + getAllPopularBooks().length}`);
+console.log(`✅ Added ${getAllCategorySlugs().length} category pages`);
+console.log(`✅ Added ${getAllSEOTopicSlugs().length} SEO topic pages`);
+console.log(`✅ Total URLs: ${totalUrls}`);

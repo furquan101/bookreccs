@@ -92,6 +92,77 @@ const DIVERSE_FALLBACK_BOOKS = [
 ];
 
 /**
+ * Check if a book should be excluded based on title, author, or description
+ * Excludes scientific/academic books and sexuality education books
+ */
+function shouldExcludeBook(book) {
+    if (!book) return true;
+    
+    const title = (book.title || '').toLowerCase();
+    const author = (book.author || '').toLowerCase();
+    const description = (book.description || '').toLowerCase();
+    const categories = (book.categories || []).map(c => c.toLowerCase()).join(' ');
+    
+    const combinedText = `${title} ${author} ${description} ${categories}`;
+    
+    // Strong exclusion keywords (definite exclusions)
+    const strongExclusionKeywords = [
+        // Scientific/Academic
+        'textbook', 'textbook:', 'academic textbook', 'scholarly textbook',
+        'research methods', 'scientific method', 'laboratory manual',
+        'experimental design', 'peer review', 'journal article',
+        'dissertation', 'thesis', 'academic press', 'university press',
+        'scientific journal', 'academic journal',
+        // Sexuality Education
+        'sex education', 'sexuality education', 'sexual health education',
+        'reproductive health education', 'sex ed curriculum',
+        // Technical/Educational
+        'instruction manual', 'technical manual', 'curriculum guide',
+        'syllabus', 'course textbook', 'lesson plan'
+    ];
+    
+    // Check for strong exclusion keywords
+    for (const keyword of strongExclusionKeywords) {
+        if (combinedText.includes(keyword)) {
+            return true;
+        }
+    }
+    
+    // Check for academic book patterns in title
+    const academicTitlePatterns = [
+        /^introduction to .* textbook/i,
+        /.*: a textbook/i,
+        /.* textbook$/i,
+        /.* textbook \d+th edition/i,
+        /.* textbook \d+rd edition/i,
+        /.* textbook \d+nd edition/i,
+        /.* textbook \d+st edition/i
+    ];
+    
+    for (const pattern of academicTitlePatterns) {
+        if (pattern.test(title)) {
+            return true;
+        }
+    }
+    
+    // Check for sexuality education patterns
+    const sexualityEducationPatterns = [
+        /sex education/i,
+        /sexuality education/i,
+        /sexual health curriculum/i,
+        /reproductive health education/i
+    ];
+    
+    for (const pattern of sexualityEducationPatterns) {
+        if (pattern.test(combinedText)) {
+            return true;
+        }
+    }
+    
+    return false;
+}
+
+/**
  * Verify a book exists in Google Books and is available in English
  * Why: Ensures we only show books that users can actually find and read
  */
@@ -369,13 +440,15 @@ export async function getTrendingBooksFromMultipleSources(forceRefresh = false) 
         }
         
         // Step 5: Convert map to array and filter out books without proper author info or cover images
+        // Also exclude scientific/academic books and sexuality education books
         const allBooks = Array.from(bookMap.values())
             .filter(book => book.author && 
                            book.author.trim() !== '' && 
                            book.author.toLowerCase() !== 'unknown author' &&
                            book.author.toLowerCase() !== 'unknown' &&
                            book.cover && 
-                           book.cover.trim() !== ''); // Only include books with cover images
+                           book.cover.trim() !== '' &&
+                           !shouldExcludeBook(book)); // Exclude scientific/academic and sexuality education books
         
         // Step 6: Ensure regional diversity
         const diverseBooks = ensureRegionalDiversity(allBooks, 6);
@@ -414,7 +487,8 @@ export async function getTrendingBooksFromMultipleSources(forceRefresh = false) 
             book.author.toLowerCase() !== 'unknown author' &&
             book.author.toLowerCase() !== 'unknown' &&
             book.cover && 
-            book.cover.trim() !== '' // Only include books with cover images
+            book.cover.trim() !== '' && // Only include books with cover images
+            !shouldExcludeBook(book) // Exclude scientific/academic and sexuality education books
         );
         
         // Cache fallback results too (they're still valid for 24 hours)
