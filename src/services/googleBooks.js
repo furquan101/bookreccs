@@ -40,13 +40,62 @@ function extractIsbn(industryIdentifiers) {
     return (isbn13 || isbn10)?.identifier || null;
 }
 
+/**
+ * Search Open Library as a fallback when Google Books quota is exhausted.
+ * Free, no API key required. Returns the same shape as searchBooks.
+ * Open Library Search: https://openlibrary.org/search.json?q=...
+ */
+async function searchBooksOpenLibrary(query) {
+    try {
+        const url = `https://openlibrary.org/search.json?q=${encodeURIComponent(query)}&limit=5`;
+        const response = await fetch(url);
+        if (!response.ok) return [];
+        const data = await response.json();
+        if (!data.docs || data.docs.length === 0) return [];
+
+        return data.docs
+            .map(doc => {
+                if (!doc.author_name || doc.author_name.length === 0) return null;
+
+                const isbn = doc.isbn?.[0] || null;
+                const coverId = doc.cover_i || null;
+
+                // Prefer ISBN-based cover (highest quality); fall back to cover ID
+                const cover = openLibraryCoverUrl(isbn)
+                    || (coverId ? `https://covers.openlibrary.org/b/id/${coverId}-L.jpg` : null);
+                const coverFallback = coverId
+                    ? `https://covers.openlibrary.org/b/id/${coverId}-M.jpg`
+                    : null;
+
+                return {
+                    id: doc.key,
+                    title: doc.title,
+                    author: doc.author_name[0],
+                    cover,
+                    coverFallback,
+                    isbn,
+                    description: null,   // Open Library search doesn't return descriptions
+                    publishedDate: doc.first_publish_year?.toString() || null,
+                    rating: null,
+                    ratingsCount: null,
+                };
+            })
+            .filter(book => book !== null);
+    } catch (err) {
+        console.error('Open Library search error:', err);
+        return [];
+    }
+}
+
 export async function searchBooks(query) {
     if (!query || query.length < 2) return [];
 
     try {
         const response = await fetch(`${GOOGLE_BOOKS_API_URL}?q=${encodeURIComponent(query)}&maxResults=5&printType=books`);
         if (!response.ok) {
-            throw new Error('Failed to fetch books');
+            // Google Books quota hit or server error — fall back to Open Library
+            console.warn(`Google Books returned ${response.status} — falling back to Open Library`);
+            return await searchBooksOpenLibrary(query);
         }
         const data = await response.json();
 
@@ -94,6 +143,7 @@ export async function searchBooks(query) {
             .filter(book => book !== null); // Remove null entries
     } catch (error) {
         console.error('Error searching books:', error);
-        return [];
+        // Last resort: try Open Library
+        return await searchBooksOpenLibrary(query);
     }
 }

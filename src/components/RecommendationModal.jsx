@@ -191,7 +191,7 @@ export default function RecommendationModal({ recommendation, onClose, onReset, 
         // Fetch similar books
         const fetchSimilarBooks = async () => {
             if (!recommendation?.title || !recommendation?.author || !isMountedRef.current) return;
-            
+
             setSimilarBooksLoading(true);
             try {
                 const similar = await getSimilarBooks(
@@ -199,13 +199,13 @@ export default function RecommendationModal({ recommendation, onClose, onReset, 
                     recommendation.author,
                     [recommendation.title]
                 );
-                
+
                 if (!isMountedRef.current) return;
-                
+
                 setSimilarBooks(similar || []);
-                
-                // Fetch book details for similar books
+
                 if (similar && similar.length > 0 && isMountedRef.current) {
+                    // Fetch book details (covers, ratings) for each Gemini-recommended similar book
                     const detailsPromises = similar.map(async (book) => {
                         try {
                             const results = await searchBooks(`${book.title} ${book.author}`);
@@ -218,6 +218,19 @@ export default function RecommendationModal({ recommendation, onClose, onReset, 
                     const details = await Promise.all(detailsPromises);
                     if (isMountedRef.current) {
                         setSimilarBooksDetails(details);
+                    }
+                } else if (isMountedRef.current) {
+                    // Gemini unavailable — fall back to other books by the same author
+                    try {
+                        const authorBooks = await searchBooks(recommendation.author);
+                        const filtered = authorBooks
+                            .filter(b => b.title?.toLowerCase() !== recommendation.title?.toLowerCase())
+                            .slice(0, 4);
+                        if (isMountedRef.current && filtered.length > 0) {
+                            setSimilarBooksDetails(filtered);
+                        }
+                    } catch {
+                        // No fallback available — section stays hidden
                     }
                 }
             } catch (error) {
@@ -261,8 +274,8 @@ export default function RecommendationModal({ recommendation, onClose, onReset, 
 
                 <div className="w-32 h-48 md:w-40 md:h-60 bg-[#181818] rounded-lg shadow-lg overflow-hidden shrink-0 relative group">
                     <BookCoverImg
-                        src={bookDetails?.cover}
-                        fallbackSrc={bookDetails?.coverFallback}
+                        src={bookDetails?.cover || recommendation.cover}
+                        fallbackSrc={bookDetails?.coverFallback || recommendation.coverFallback}
                         alt={recommendation.title}
                         className="w-full h-full object-cover"
                         iconClassName="w-full h-full text-gray-600"
