@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, BookOpen } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
+import BookCoverImg from './BookCoverImg';
 import { searchBooks } from '../services/googleBooks';
 import { getBooksLike } from '../services/booksLike';
 import { slugToTitle } from '../utils/slugUtils';
@@ -91,6 +92,26 @@ export default function BooksLikePage() {
     const seoDescription = `Discover ${similarBooksDetails.length || 12} books like ${bookTitle}${bookAuthor ? ` by ${bookAuthor}` : ''}. These recommendations are based on reading taste and themes, not just genre. Find your next favorite read!`;
     const keywords = `books like ${bookTitle}, similar books to ${bookTitle}, ${bookTitle} recommendations, books similar to ${bookTitle}, reading recommendations`;
 
+    const structuredData = similarBooksDetails.length > 0 ? {
+        "@context": "https://schema.org",
+        "@type": "ItemList",
+        "name": seoTitle,
+        "description": seoDescription,
+        "url": pageUrl,
+        "numberOfItems": similarBooksDetails.length,
+        "itemListElement": similarBooksDetails.map((book, i) => ({
+            "@type": "ListItem",
+            "position": i + 1,
+            "item": {
+                "@type": "Book",
+                "name": book.title,
+                "author": { "@type": "Person", "name": book.author },
+                ...(book.cover ? { "image": book.cover } : {}),
+                "url": `https://bookreccs.netlify.app/book/${encodeURIComponent(book.title)}/${encodeURIComponent(book.author)}`
+            }
+        }))
+    } : undefined;
+
     return (
         <>
             <SEOHead
@@ -98,8 +119,9 @@ export default function BooksLikePage() {
                 description={seoDescription}
                 keywords={keywords}
                 url={pageUrl}
-                image={bookDetails?.cover || 'https://bookreccs.netlify.app/book-reccs-cover.png'}
+                image={bookDetails?.cover}
                 type="article"
+                structuredData={structuredData}
             />
             <div className="min-h-screen w-full bg-background text-white">
                 <Header showTitle={false} />
@@ -161,30 +183,13 @@ export default function BooksLikePage() {
                                         className="group bg-[#181818] rounded-lg border border-[#3C3C3C] hover:border-[#3C3C3C] transition-all duration-300 overflow-hidden flex flex-col max-w-xs"
                                     >
                                         <div className="relative w-full aspect-[2/3] bg-[#0f0f0f] overflow-hidden">
-                                            {bookDetails.cover ? (
-                                                <>
-                                                    <img
-                                                        src={bookDetails.cover}
-                                                        alt={bookTitle}
-                                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                                                        loading="lazy"
-                                                        onError={(e) => {
-                                                            e.target.style.display = 'none';
-                                                            const fallback = e.target.nextElementSibling;
-                                                            if (fallback) {
-                                                                fallback.style.display = 'flex';
-                                                            }
-                                                        }}
-                                                    />
-                                                    <div className="w-full h-full flex items-center justify-center hidden">
-                                                        <BookOpen className="w-16 h-16 text-gray-600" />
-                                                    </div>
-                                                </>
-                                            ) : (
-                                                <div className="w-full h-full flex items-center justify-center">
-                                                    <BookOpen className="w-16 h-16 text-gray-600" />
-                                                </div>
-                                            )}
+                                            <BookCoverImg
+                                                src={bookDetails.cover}
+                                                fallbackSrc={bookDetails.coverFallback}
+                                                alt={bookTitle}
+                                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                                loading="lazy"
+                                            />
                                         </div>
                                         <div className="p-4 flex flex-col flex-1">
                                             <h3 className="text-lg font-serif text-white mb-2 group-hover:text-gray-200 transition-colors">
@@ -227,30 +232,13 @@ export default function BooksLikePage() {
                                             >
                                                 {/* Book Cover */}
                                                 <div className="relative w-full aspect-[5/6] bg-[#0f0f0f] overflow-hidden">
-                                                    {book.cover ? (
-                                                        <>
-                                                            <img
-                                                                src={book.cover}
-                                                                alt={book.title}
-                                                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                                                                loading="lazy"
-                                                                onError={(e) => {
-                                                                    e.target.style.display = 'none';
-                                                                    const fallback = e.target.nextElementSibling;
-                                                                    if (fallback) {
-                                                                        fallback.style.display = 'flex';
-                                                                    }
-                                                                }}
-                                                            />
-                                                            <div className="w-full h-full flex items-center justify-center hidden">
-                                                                <BookOpen className="w-16 h-16 text-gray-600" />
-                                                            </div>
-                                                        </>
-                                                    ) : (
-                                                        <div className="w-full h-full flex items-center justify-center">
-                                                            <BookOpen className="w-16 h-16 text-gray-600" />
-                                                        </div>
-                                                    )}
+                                                    <BookCoverImg
+                                                        src={book.cover}
+                                                        fallbackSrc={book.coverFallback}
+                                                        alt={book.title}
+                                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                                        loading="lazy"
+                                                    />
                                                 </div>
 
                                                 {/* Book Info */}

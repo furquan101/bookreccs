@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Search, BookOpen, X, Loader2, SlidersHorizontal, ChevronDown } from 'lucide-react';
+import BookCoverImg from './BookCoverImg';
 import { 
     Lightning, 
     BookOpen as PhosphorBookOpen, 
@@ -218,31 +219,15 @@ export default function BookInput({ selectedBooks, setSelectedBooks, activeFilte
                                             onClick={() => handleSelectBook(book)}
                                             className="flex-1 flex items-center gap-3 text-left"
                                         >
-                                            {book.cover ? (
-                                                <>
-                                                    <img 
-                                                        src={book.cover} 
-                                                        alt={book.title} 
-                                                        className="w-10 h-14 object-cover rounded shadow-sm"
-                                                        loading="eager"
-                                                        fetchPriority="high"
-                                                        onError={(e) => {
-                                                            e.target.style.display = 'none';
-                                                            const fallback = e.target.nextElementSibling;
-                                                            if (fallback) {
-                                                                fallback.style.display = 'flex';
-                                                            }
-                                                        }}
-                                                    />
-                                                    <div className="w-10 h-14 bg-white/10 rounded flex items-center justify-center hidden">
-                                                        <BookOpen className="w-4 h-4 text-white/40" />
-                                                    </div>
-                                                </>
-                                            ) : (
-                                                <div className="w-10 h-14 bg-white/10 rounded flex items-center justify-center">
-                                                    <BookOpen className="w-4 h-4 text-white/40" />
-                                                </div>
-                                            )}
+                                            <BookCoverImg
+                                                src={book.cover}
+                                                fallbackSrc={book.coverFallback}
+                                                alt={book.title}
+                                                className="w-10 h-14 object-cover rounded shadow-sm"
+                                                iconClassName="w-10 h-14 bg-white/10 rounded"
+                                                loading="eager"
+                                                fetchPriority="high"
+                                            />
                                             <div className="flex flex-col overflow-hidden">
                                                 <span className="text-sm font-sans text-white truncate">{book.title}</span>
                                                 <span className="text-xs font-sans text-white/60 truncate">{book.author}</span>
@@ -282,31 +267,15 @@ export default function BookInput({ selectedBooks, setSelectedBooks, activeFilte
                                                     onClick={() => handleSelectBook(book)}
                                                     className="flex-1 flex items-center gap-3 text-left"
                                                 >
-                                                {book.cover ? (
-                                                    <>
-                                                        <img 
-                                                            src={book.cover} 
-                                                            alt={book.title} 
-                                                            className="w-10 h-14 object-cover rounded shadow-sm"
-                                                            loading="eager"
-                                                            fetchPriority="high"
-                                                            onError={(e) => {
-                                                                e.target.style.display = 'none';
-                                                                const fallback = e.target.nextElementSibling;
-                                                                if (fallback) {
-                                                                    fallback.style.display = 'flex';
-                                                                }
-                                                            }}
-                                                        />
-                                                        <div className="w-10 h-14 bg-white/10 rounded flex items-center justify-center hidden">
-                                                            <BookOpen className="w-4 h-4 text-white/40" />
-                                                        </div>
-                                                    </>
-                                                ) : (
-                                                    <div className="w-10 h-14 bg-white/10 rounded flex items-center justify-center">
-                                                        <BookOpen className="w-4 h-4 text-white/40" />
-                                                    </div>
-                                                )}
+                                                <BookCoverImg
+                                                    src={book.cover}
+                                                    fallbackSrc={book.coverFallback}
+                                                    alt={book.title}
+                                                    className="w-10 h-14 object-cover rounded shadow-sm"
+                                                    iconClassName="w-10 h-14 bg-white/10 rounded"
+                                                    loading="eager"
+                                                    fetchPriority="high"
+                                                />
                                                 <div className="flex flex-col overflow-hidden">
                                                     <span className="text-sm font-sans text-white truncate">{book.title}</span>
                                                     <span className="text-xs font-sans text-white/60 truncate">{book.author}</span>

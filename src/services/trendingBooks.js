@@ -17,6 +17,34 @@ import { getNYTBestsellers } from './nytBooks';
 const CACHE_KEY = 'trending_books_cache';
 const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
 
+// Static trending file (written weekly by GitHub Actions)
+const STATIC_TRENDING_URL = '/trending.json';
+const STATIC_MAX_AGE_MS = 8 * 24 * 60 * 60 * 1000; // 8 days (slightly beyond weekly cadence)
+
+/**
+ * Try to load the pre-generated trending.json from the static file.
+ * Returns an array of book objects, or null if unavailable/stale.
+ */
+async function getStaticTrending() {
+    try {
+        const res = await fetch(STATIC_TRENDING_URL);
+        if (!res.ok) return null;
+        const data = await res.json();
+        if (!data.generatedAt || !Array.isArray(data.books) || data.books.length === 0) return null;
+
+        const age = Date.now() - new Date(data.generatedAt).getTime();
+        if (age > STATIC_MAX_AGE_MS) {
+            console.log('Static trending.json is stale — will fetch fresh data');
+            return null;
+        }
+
+        console.log('Using pre-generated trending.json');
+        return data.books.slice(0, 6);
+    } catch {
+        return null;
+    }
+}
+
 /**
  * Get cached trending books if available and not expired
  * Returns null if cache is expired or doesn't exist
@@ -311,9 +339,16 @@ export async function getTrendingBooksFromMultipleSources(forceRefresh = false) 
         console.log('Force refresh: fetching fresh trending books');
     }
     
+    // Check static file (updated weekly by GitHub Actions) — fast, no API quota
+    const staticBooks = await getStaticTrending();
+    if (staticBooks && staticBooks.length > 0) {
+        setCachedTrendingBooks(staticBooks);
+        return staticBooks;
+    }
+
     const verifiedBooks = [];
     const bookMap = new Map(); // Track books by title+author to avoid duplicates
-    
+
     try {
         // Step 1: Fetch from multiple sources in parallel
         // Priority: Get book data first, then verify covers

@@ -1,7 +1,8 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { getTrendingBooksFromMultipleSources } from '../services/trendingBooks';
-import { BookOpen, Star } from 'lucide-react';
+import { Star } from 'lucide-react';
 import { CaretRight } from '@phosphor-icons/react';
+import BookCoverImg from './BookCoverImg';
 
 export default function TrendingSection({ onBookClick }) {
     const [books, setBooks] = useState([]);
@@ -75,37 +76,15 @@ export default function TrendingSection({ onBookClick }) {
                             onClick={() => onBookClick?.(book)}
                             className="relative shrink-0 w-[180px] md:w-[220px] aspect-[2/3] rounded-lg overflow-hidden group cursor-pointer transition-transform duration-300 hover:-translate-y-2 shadow-lg"
                         >
-                            {book.cover ? (
-                                <>
-                                    <img
-                                        src={book.cover}
-                                        alt={book.title}
-                                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                                        loading="eager"
-                                        fetchPriority="high"
-                                        onError={(e) => {
-                                            // Hide image and show fallback if it fails to load
-                                            console.warn('Image failed to load:', book.cover, 'for book:', book.title);
-                                            e.target.style.display = 'none';
-                                            const fallback = e.target.nextElementSibling;
-                                            if (fallback) {
-                                                fallback.style.display = 'flex';
-                                            }
-                                        }}
-                                        onLoad={() => {
-                                            // Debug: Log successful image loads
-                                            console.debug('Image loaded successfully:', book.title);
-                                        }}
-                                    />
-                                    <div className="w-full h-full bg-gray-800 flex items-center justify-center hidden">
-                                        <BookOpen className="w-12 h-12 text-gray-600" />
-                                    </div>
-                                </>
-                            ) : (
-                                <div className="w-full h-full bg-gray-800 flex items-center justify-center">
-                                    <BookOpen className="w-12 h-12 text-gray-600" />
-                                </div>
-                            )}
+                            <BookCoverImg
+                                src={book.cover}
+                                fallbackSrc={book.coverFallback}
+                                alt={book.title}
+                                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                                iconClassName="w-full h-full bg-gray-800"
+                                loading="eager"
+                                fetchPriority="high"
+                            />
 
                             <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
                                 <p className="text-white font-sans text-lg font-semibold leading-tight line-clamp-2">{book.title}</p>

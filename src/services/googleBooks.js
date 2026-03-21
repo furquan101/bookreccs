@@ -1,16 +1,43 @@
 const GOOGLE_BOOKS_API_URL = 'https://www.googleapis.com/books/v1/volumes';
 
 /**
- * Enhance Google Books image URL to get higher quality
- * Google Books images can be resized by modifying the URL parameters
- * This function safely enhances URLs without breaking them
+ * Enhance Google Books image URL to get the highest quality version.
+ * Google Books thumbnails use zoom=1 (~128px). Setting zoom=0 gives the
+ * full-resolution front cover. Also removes the page-curl effect and
+ * upgrades to HTTPS.
  */
 function enhanceImageQuality(imageUrl) {
     if (!imageUrl) return null;
-    
-    // Return original URL - Google Books URLs work reliably as-is
-    // If enhancement is needed in the future, it can be added here safely
-    return imageUrl;
+
+    let url = imageUrl
+        .replace(/^http:\/\//, 'https://')  // Upgrade to HTTPS
+        .replace(/&edge=curl/g, '')          // Remove page-curl effect
+        .replace(/&zoom=\d+/g, '&zoom=0');  // Full-resolution image
+
+    return url;
+}
+
+/**
+ * Build an Open Library large cover URL from an ISBN.
+ * Open Library is free with no API key. Returns null if no ISBN available.
+ * URL format: https://covers.openlibrary.org/b/isbn/{ISBN}-L.jpg
+ * Open Library returns a 1x1 placeholder if the cover doesn't exist,
+ * so we use this as a candidate and let the img onError handler fall back.
+ */
+function openLibraryCoverUrl(isbn) {
+    if (!isbn) return null;
+    return `https://covers.openlibrary.org/b/isbn/${isbn}-L.jpg`;
+}
+
+/**
+ * Extract the best ISBN from Google Books industry identifiers.
+ * Prefers ISBN_13 over ISBN_10.
+ */
+function extractIsbn(industryIdentifiers) {
+    if (!industryIdentifiers) return null;
+    const isbn13 = industryIdentifiers.find(id => id.type === 'ISBN_13');
+    const isbn10 = industryIdentifiers.find(id => id.type === 'ISBN_10');
+    return (isbn13 || isbn10)?.identifier || null;
 }
 
 export async function searchBooks(query) {
@@ -28,33 +55,36 @@ export async function searchBooks(query) {
         return data.items
             .map(item => {
                 const volumeInfo = item.volumeInfo;
-                
+
                 // Skip books without authors to avoid showing "Unknown Author"
                 if (!volumeInfo.authors || volumeInfo.authors.length === 0) {
                     return null;
                 }
-                
+
+                const isbn = extractIsbn(volumeInfo.industryIdentifiers);
+
                 // Prioritize higher quality images: large > medium > small > thumbnail > smallThumbnail
-                const coverUrl = volumeInfo.imageLinks?.large || 
-                                volumeInfo.imageLinks?.medium || 
-                                volumeInfo.imageLinks?.small || 
-                                volumeInfo.imageLinks?.thumbnail || 
-                                volumeInfo.imageLinks?.smallThumbnail || 
+                const rawCoverUrl = volumeInfo.imageLinks?.large ||
+                                volumeInfo.imageLinks?.medium ||
+                                volumeInfo.imageLinks?.small ||
+                                volumeInfo.imageLinks?.thumbnail ||
+                                volumeInfo.imageLinks?.smallThumbnail ||
                                 null;
-                
-                // Use the cover URL directly - Google Books URLs are reliable
-                const cover = coverUrl || null;
-                
-                // Debug: Log if no cover found
+
+                // Use Open Library as primary (large cover) with enhanced Google Books as fallback
+                const cover = openLibraryCoverUrl(isbn) || enhanceImageQuality(rawCoverUrl);
+
                 if (!cover) {
                     console.debug(`No cover image for: ${volumeInfo.title}`);
                 }
-                
+
                 return {
                     id: item.id,
                     title: volumeInfo.title,
                     author: volumeInfo.authors[0],
                     cover: cover,
+                    coverFallback: enhanceImageQuality(rawCoverUrl), // Google Books fallback
+                    isbn: isbn,
                     description: volumeInfo.description || null,
                     publishedDate: volumeInfo.publishedDate,
                     rating: volumeInfo.averageRating || null,

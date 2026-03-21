@@ -1,114 +1,60 @@
-import { useEffect } from 'react';
-
 /**
- * SEO Head Component
- * Dynamically updates meta tags for SEO
- * Why this is good for SEO:
- * - Unique URLs for each reading taste profile
- * - Long-tail keyword targeting (e.g., "books for productivity growth thinking")
- * - Shareable pages with unique meta tags
- * - Better indexing and organic traffic opportunities
+ * SEOHead — React 19 native metadata component.
+ *
+ * React 19 hoists <title>, <meta>, and <link> elements rendered anywhere in the
+ * component tree into <head> automatically. This is far more reliable than the
+ * previous useEffect/DOM-manipulation approach because:
+ *
+ *  - Tags are present on the FIRST render (no flash / race condition)
+ *  - React deduplicates by the `name` / `property` attribute
+ *  - Works correctly with React's reconciler on navigation
+ *  - Social crawlers that do execute JS see the correct tags immediately
  */
-export default function SEOHead({ 
-    title, 
-    description, 
-    keywords, 
-    url, 
+
+const DEFAULT_IMAGE = 'https://bookreccs.netlify.app/book-reccs-cover.png';
+
+export default function SEOHead({
+    title,
+    description,
+    keywords,
+    url,
     image,
-    type = "website"
+    type = 'website',
+    structuredData,   // optional JSON-LD object, rendered as page-specific schema
 }) {
-    useEffect(() => {
-        // Update document title
-        if (title) {
-            document.title = title;
-        }
+    const ogImage = image || DEFAULT_IMAGE;
 
-        // Update or create meta tags
-        const updateMetaTag = (property, content) => {
-            if (!content) return;
-            
-            let element = document.querySelector(`meta[property="${property}"]`) || 
-                         document.querySelector(`meta[name="${property}"]`);
-            
-            if (!element) {
-                element = document.createElement('meta');
-                if (property.startsWith('og:') || property.startsWith('twitter:')) {
-                    element.setAttribute('property', property);
-                } else {
-                    element.setAttribute('name', property);
-                }
-                document.head.appendChild(element);
-            }
-            element.setAttribute('content', content);
-        };
+    return (
+        <>
+            {/* Primary */}
+            {title && <title>{title}</title>}
+            {description && <meta name="description" content={description} />}
+            {keywords && <meta name="keywords" content={keywords} />}
 
-        // Primary meta tags
-        updateMetaTag('title', title);
-        updateMetaTag('description', description);
-        if (keywords) {
-            updateMetaTag('keywords', keywords);
-        }
+            {/* Open Graph */}
+            <meta property="og:type" content={type} />
+            {title && <meta property="og:title" content={title} />}
+            {description && <meta property="og:description" content={description} />}
+            {url && <meta property="og:url" content={url} />}
+            <meta property="og:image" content={ogImage} />
+            <meta property="og:site_name" content="Book Reccs" />
 
-        // Open Graph / Facebook
-        updateMetaTag('og:type', type);
-        updateMetaTag('og:title', title);
-        updateMetaTag('og:description', description);
-        updateMetaTag('og:url', url);
-        if (image) {
-            updateMetaTag('og:image', image);
-        }
-        updateMetaTag('og:site_name', 'Book Reccs');
+            {/* Twitter */}
+            <meta name="twitter:card" content="summary_large_image" />
+            {title && <meta name="twitter:title" content={title} />}
+            {description && <meta name="twitter:description" content={description} />}
+            {url && <meta name="twitter:url" content={url} />}
+            <meta name="twitter:image" content={ogImage} />
 
-        // Twitter
-        updateMetaTag('twitter:card', 'summary_large_image');
-        updateMetaTag('twitter:title', title);
-        updateMetaTag('twitter:description', description);
-        updateMetaTag('twitter:url', url);
-        if (image) {
-            updateMetaTag('twitter:image', image);
-        }
+            {/* Canonical */}
+            {url && <link rel="canonical" href={url} />}
 
-        // Canonical URL
-        let canonical = document.querySelector('link[rel="canonical"]');
-        if (!canonical) {
-            canonical = document.createElement('link');
-            canonical.setAttribute('rel', 'canonical');
-            document.head.appendChild(canonical);
-        }
-        if (url) {
-            canonical.setAttribute('href', url);
-        }
-
-        // Structured Data (JSON-LD)
-        let structuredData = document.querySelector('script[type="application/ld+json"][data-reading-taste]');
-        if (!structuredData) {
-            structuredData = document.createElement('script');
-            structuredData.setAttribute('type', 'application/ld+json');
-            structuredData.setAttribute('data-reading-taste', 'true');
-            document.head.appendChild(structuredData);
-        }
-
-        if (title && description) {
-            const schema = {
-                "@context": "https://schema.org",
-                "@type": "CollectionPage",
-                "name": title,
-                "description": description,
-                "url": url || window.location.href,
-                "mainEntity": {
-                    "@type": "ItemList",
-                    "name": title,
-                    "description": description
-                }
-            };
-            structuredData.textContent = JSON.stringify(schema);
-        }
-
-        // Cleanup function
-        return () => {
-            // Optionally reset to default on unmount
-        };
-    }, [title, description, keywords, url, image, type]);
-
-    return null; // This component doesn't render anything
+            {/* Page-specific structured data */}
+            {structuredData && (
+                <script type="application/ld+json">
+                    {JSON.stringify(structuredData)}
+                </script>
+            )}
+        </>
+    );
 }

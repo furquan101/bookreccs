@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { ArrowLeft, BookOpen, ExternalLink } from 'lucide-react';
+import { ArrowLeft, ExternalLink } from 'lucide-react';
+import BookCoverImg from './BookCoverImg';
 import { CaretRight } from '@phosphor-icons/react';
 import { searchBooks } from '../services/googleBooks';
 import { searchBookVideos } from '../services/youtube';
@@ -222,30 +223,16 @@ export default function BookDetailPage() {
                     <div className="w-32 h-48 md:w-40 md:h-60 bg-[#181818] rounded-lg shadow-lg overflow-hidden shrink-0 relative group">
                         {isLoading ? (
                             <div className="w-full h-full bg-[#0f0f0f] animate-pulse"></div>
-                        ) : bookDetails?.cover ? (
-                            <>
-                                <img 
-                                    src={bookDetails.cover} 
-                                    alt={decodedTitle} 
-                                    className="w-full h-full object-cover"
-                                    loading="eager"
-                                    fetchPriority="high"
-                                    onError={(e) => {
-                                        e.target.style.display = 'none';
-                                        const fallback = e.target.nextElementSibling;
-                                        if (fallback) {
-                                            fallback.style.display = 'flex';
-                                        }
-                                    }}
-                                />
-                                <div className="w-full h-full flex items-center justify-center text-gray-600 hidden">
-                                    <BookOpen className="w-12 h-12" />
-                                </div>
-                            </>
                         ) : (
-                            <div className="w-full h-full flex items-center justify-center text-gray-600">
-                                <BookOpen className="w-12 h-12" />
-                            </div>
+                            <BookCoverImg
+                                src={bookDetails?.cover}
+                                fallbackSrc={bookDetails?.coverFallback}
+                                alt={decodedTitle}
+                                className="w-full h-full object-cover"
+                                iconClassName="w-full h-full text-gray-600"
+                                loading="eager"
+                                fetchPriority="high"
+                            />
                         )}
                     </div>
 
@@ -375,30 +362,13 @@ export default function BookDetailPage() {
                                     >
                                         <div className="bg-[#181818] rounded-lg overflow-hidden border border-[#3C3C3C] hover:border-[#3C3C3C] transition-all duration-300 h-full flex flex-col">
                                             <div className="relative w-[200px] h-[300px] bg-[#0f0f0f] overflow-hidden flex-shrink-0">
-                                                {book.cover ? (
-                                                    <>
-                                                        <img
-                                                            src={book.cover}
-                                                            alt={book.title}
-                                                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                                                            loading="lazy"
-                                                            onError={(e) => {
-                                                                e.target.style.display = 'none';
-                                                                const fallback = e.target.nextElementSibling;
-                                                                if (fallback) {
-                                                                    fallback.style.display = 'flex';
-                                                                }
-                                                            }}
-                                                        />
-                                                        <div className="w-full h-full flex items-center justify-center hidden">
-                                                            <BookOpen className="w-8 h-8 text-gray-600" />
-                                                        </div>
-                                                    </>
-                                                ) : (
-                                                    <div className="w-full h-full flex items-center justify-center">
-                                                        <BookOpen className="w-8 h-8 text-gray-600" />
-                                                    </div>
-                                                )}
+                                                <BookCoverImg
+                                                    src={book.cover}
+                                                    fallbackSrc={book.coverFallback}
+                                                    alt={book.title}
+                                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                                    loading="lazy"
+                                                />
                                             </div>
                                             <div className="pt-2 px-2 pb-1 flex flex-col flex-1">
                                                 <h4 className="text-xs font-sans text-white line-clamp-2 leading-tight group-hover:text-gray-200 mb-1 font-medium">
