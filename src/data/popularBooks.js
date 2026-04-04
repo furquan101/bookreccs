@@ -176,6 +176,86 @@ export const popularBooks = [
   { title: "The Stand", author: "Stephen King", category: "horror", seoPriority: "high" },
   { title: "11/22/63", author: "Stephen King", category: "sci-fi", seoPriority: "high" },
   { title: "Fairy Tale", author: "Stephen King", category: "fantasy", seoPriority: "high" },
+  { title: "Holly", author: "Stephen King", category: "horror", seoPriority: "high" },
+
+  // Emily Henry - Massive romance/fiction author, all high search volume
+  { title: "Beach Read", author: "Emily Henry", category: "romance", seoPriority: "high" },
+  { title: "Book Lovers", author: "Emily Henry", category: "romance", seoPriority: "high" },
+  { title: "People We Meet on Vacation", author: "Emily Henry", category: "romance", seoPriority: "high" },
+  { title: "Happy Place", author: "Emily Henry", category: "romance", seoPriority: "high" },
+  { title: "Funny Story", author: "Emily Henry", category: "romance", seoPriority: "high" },
+  { title: "Great Expectations", author: "Emily Henry", category: "romance", seoPriority: "high" },
+
+  // Rebecca Yarros - Biggest fantasy release in years
+  { title: "Fourth Wing", author: "Rebecca Yarros", category: "fantasy", seoPriority: "high" },
+  { title: "Iron Flame", author: "Rebecca Yarros", category: "fantasy", seoPriority: "high" },
+  { title: "Onyx Storm", author: "Rebecca Yarros", category: "fantasy", seoPriority: "high" },
+
+  // 2022-2025 Literary Bestsellers & Award Winners
+  { title: "Tomorrow, and Tomorrow, and Tomorrow", author: "Gabrielle Zevin", category: "literary", seoPriority: "high" },
+  { title: "The Women", author: "Kristin Hannah", category: "historical-fiction", seoPriority: "high" },
+  { title: "Intermezzo", author: "Sally Rooney", category: "literary", seoPriority: "high" },
+  { title: "Demon Copperhead", author: "Barbara Kingsolver", category: "literary", seoPriority: "high" },
+  { title: "James", author: "Percival Everett", category: "literary", seoPriority: "high" },
+  { title: "The God of the Woods", author: "Lauren Fox", category: "thriller", seoPriority: "high" },
+  { title: "The Life Impossible", author: "Matt Haig", category: "fiction", seoPriority: "high" },
+  { title: "All the Light We Cannot See", author: "Anthony Doerr", category: "historical-fiction", seoPriority: "high" },
+  { title: "The Heaven and Earth Grocery Store", author: "James McBride", category: "literary", seoPriority: "high" },
+  { title: "Lessons in Chemistry", author: "Bonnie Garmus", category: "fiction", seoPriority: "high" },
+  { title: "The Covenant of Water", author: "Abraham Verghese", category: "literary", seoPriority: "high" },
+  { title: "Hello Beautiful", author: "Ann Napolitano", category: "literary", seoPriority: "high" },
+  { title: "In Memoriam", author: "Alice Winn", category: "historical-fiction", seoPriority: "high" },
+
+  // 2024-2025 Thrillers & Mystery Hits
+  { title: "The Women in the Walls", author: "Amy Gentry", category: "thriller", seoPriority: "medium" },
+  { title: "The Maid and the Mansion", author: "Nita Prose", category: "mystery", seoPriority: "medium" },
+  { title: "The Hotel Nantucket", author: "Elin Hilderbrand", category: "fiction", seoPriority: "high" },
+  { title: "Swan Song", author: "Elin Hilderbrand", category: "fiction", seoPriority: "high" },
+  { title: "The Lost Apothecary", author: "Sarah Penner", category: "historical-fiction", seoPriority: "high" },
+  { title: "The Thursday Murder Club", author: "Richard Osman", category: "mystery", seoPriority: "high" },
+  { title: "In a holidaze", author: "Christina Lauren", category: "romance", seoPriority: "medium" },
+
+  // Christina Lauren - Popular romance duo
+  { title: "The Unhoneymooners", author: "Christina Lauren", category: "romance", seoPriority: "high" },
+  { title: "Twice in a Blue Moon", author: "Christina Lauren", category: "romance", seoPriority: "medium" },
+
+  // Ali Hazelwood - Popular romance/STEM author
+  { title: "The Love Hypothesis", author: "Ali Hazelwood", category: "romance", seoPriority: "high" },
+  { title: "Love on the Brain", author: "Ali Hazelwood", category: "romance", seoPriority: "high" },
+  { title: "Bride", author: "Ali Hazelwood", category: "romance", seoPriority: "high" },
+
+  // Nonfiction 2023-2025
+  { title: "Outlive", author: "Peter Attia", category: "non-fiction", seoPriority: "high" },
+  { title: "The Wager", author: "David Grann", category: "non-fiction", seoPriority: "high" },
+  { title: "Greenlights", author: "Matthew McConaughey", category: "memoir", seoPriority: "high" },
+  { title: "I'm Glad My Mom Died", author: "Jennette McCurdy", category: "memoir", seoPriority: "high" },
+  { title: "Spare", author: "Prince Harry", category: "memoir", seoPriority: "high" },
+  { title: "Poverty, by America", author: "Matthew Desmond", category: "non-fiction", seoPriority: "high" },
+  { title: "The Anxious Generation", author: "Jonathan Haidt", category: "non-fiction", seoPriority: "high" },
+  { title: "Atlas of the Heart", author: "Brené Brown", category: "non-fiction", seoPriority: "high" },
+  { title: "Four Thousand Weeks", author: "Oliver Burkeman", category: "self-improvement", seoPriority: "high" },
+  { title: "Think Again", author: "Adam Grant", category: "self-improvement", seoPriority: "high" },
+  { title: "Die with Zero", author: "Bill Perkins", category: "self-improvement", seoPriority: "high" },
+
+  // Romance classics often recommended alongside modern romance
+  { title: "The Hating Game", author: "Sally Thorne", category: "romance", seoPriority: "high" },
+  { title: "Red, White and Royal Blue", author: "Casey McQuiston", category: "romance", seoPriority: "high" },
+  { title: "One Last Stop", author: "Casey McQuiston", category: "romance", seoPriority: "high" },
+  { title: "The Kiss Quotient", author: "Helen Hoang", category: "romance", seoPriority: "high" },
+  { title: "The Bride Test", author: "Helen Hoang", category: "romance", seoPriority: "medium" },
+
+  // More recent fantasy hits
+  { title: "A Court of Thorns and Roses", author: "Sarah J. Maas", category: "fantasy", seoPriority: "high" },
+  { title: "A Court of Mist and Fury", author: "Sarah J. Maas", category: "fantasy", seoPriority: "high" },
+  { title: "A Court of Silver Flames", author: "Sarah J. Maas", category: "fantasy", seoPriority: "high" },
+  { title: "Throne of Glass", author: "Sarah J. Maas", category: "fantasy", seoPriority: "high" },
+  { title: "House of Earth and Blood", author: "Sarah J. Maas", category: "fantasy", seoPriority: "high" },
+  { title: "The House in the Cerulean Sea", author: "TJ Klune", category: "fantasy", seoPriority: "high" },
+  { title: "Under the Whispering Door", author: "TJ Klune", category: "fantasy", seoPriority: "high" },
+  { title: "Piranesi", author: "Susanna Clarke", category: "fantasy", seoPriority: "high" },
+  { title: "Jonathan Strange and Mr Norrell", author: "Susanna Clarke", category: "fantasy", seoPriority: "medium" },
+  { title: "The Jasad Heir", author: "Sara Hashem", category: "fantasy", seoPriority: "high" },
+  { title: "A Promise of Peridot", author: "Kate Golden", category: "fantasy", seoPriority: "medium" },
 ];
 
 /**

@@ -165,6 +165,232 @@ export const seoTopics = {
     keywords: 'classic nonfiction books, classic non fiction books, nonfiction classics, timeless nonfiction books, essential nonfiction classics',
     searchVolume: 16,
     difficulty: 50
+  },
+
+  // --- Romance ---
+  'best-romance-books': {
+    title: 'Best Romance Books to Read Right Now',
+    description: 'From swoony contemporaries to epic fantasy romance, these are the best romance novels readers can\'t put down. Discover your next favourite love story.',
+    seoTitle: 'Best Romance Books | Top Romance Novels to Read Now',
+    keywords: 'best romance books, best romance novels, top romance books, must read romance books, romance books recommendations',
+    searchVolume: 320,
+    difficulty: 200
+  },
+  'best-romance-novels-of-all-time': {
+    title: 'Best Romance Novels of All Time',
+    description: 'The greatest romance novels ever written — from timeless classics to modern masterpieces. These are the love stories that have captured millions of hearts.',
+    seoTitle: 'Best Romance Novels of All Time | Greatest Love Stories',
+    keywords: 'best romance novels of all time, greatest romance novels, best romance books ever, top romance novels, classic romance books',
+    searchVolume: 210,
+    difficulty: 180
+  },
+  'books-like-fourth-wing': {
+    title: 'Books Like Fourth Wing by Rebecca Yarros',
+    description: 'Loved Fourth Wing? Discover similar fantasy romance novels with dragon riders, slow-burn romance, and magical academy settings.',
+    seoTitle: 'Books Like Fourth Wing | Fantasy Romance Recommendations',
+    keywords: 'books like fourth wing, books similar to fourth wing, fourth wing recommendations, fantasy romance books, dragon books like fourth wing',
+    searchVolume: 180,
+    difficulty: 60
+  },
+  'books-like-it-ends-with-us': {
+    title: 'Books Like It Ends with Us by Colleen Hoover',
+    description: 'If It Ends with Us moved you, these books share the same emotional depth, powerful storytelling, and unforgettable characters.',
+    seoTitle: 'Books Like It Ends with Us | Emotional Fiction Recommendations',
+    keywords: 'books like it ends with us, books similar to it ends with us, colleen hoover recommendations, emotional romance books, books like colleen hoover',
+    searchVolume: 160,
+    difficulty: 80
+  },
+  'colleen-hoover-books-ranked': {
+    title: 'All Colleen Hoover Books Ranked',
+    description: 'Every Colleen Hoover book ranked from best to most underrated. Find out which CoHo novels to read first and which are worth the hype.',
+    seoTitle: 'Colleen Hoover Books Ranked | Best CoHo Novels',
+    keywords: 'colleen hoover books ranked, best colleen hoover books, colleen hoover reading order, coho books, all colleen hoover books',
+    searchVolume: 140,
+    difficulty: 90
+  },
+  'emily-henry-books-ranked': {
+    title: 'All Emily Henry Books Ranked',
+    description: 'Every Emily Henry novel ranked — from Beach Read to Funny Story. Find the perfect Emily Henry book to start with.',
+    seoTitle: 'Emily Henry Books Ranked | Best Emily Henry Novels',
+    keywords: 'emily henry books ranked, best emily henry books, emily henry reading order, all emily henry books, emily henry recommendations',
+    searchVolume: 120,
+    difficulty: 70
+  },
+  'best-books-for-women': {
+    title: 'Best Books for Women',
+    description: 'A curated list of the best books for women — from empowering fiction to inspiring memoirs and self-help. Books that resonate deeply with women readers.',
+    seoTitle: 'Best Books for Women | Top Fiction and Nonfiction for Women',
+    keywords: 'best books for women, books for women to read, best women\'s fiction, must read books for women, books women love',
+    searchVolume: 110,
+    difficulty: 150
+  },
+  'romantasy-books': {
+    title: 'Best Romantasy Books',
+    description: 'Romantasy — the perfect blend of romance and fantasy. These books deliver epic world-building, magical settings, and swoon-worthy love stories.',
+    seoTitle: 'Best Romantasy Books | Romance + Fantasy Reads',
+    keywords: 'romantasy books, best romantasy books, fantasy romance books, romantasy recommendations, romantasy reading list',
+    searchVolume: 95,
+    difficulty: 60
+  },
+
+  // --- Thriller & Mystery ---
+  'best-thriller-books': {
+    title: 'Best Thriller Books of All Time',
+    description: 'The most gripping and unputdownable thriller novels ever written. These books will keep you up all night with twists you never see coming.',
+    seoTitle: 'Best Thriller Books | Most Gripping Thrillers to Read',
+    keywords: 'best thriller books, best thriller novels, top thriller books, must read thrillers, best thrillers of all time',
+    searchVolume: 280,
+    difficulty: 220
+  },
+  'books-with-plot-twists': {
+    title: 'Books with the Best Plot Twists',
+    description: 'These books have endings and revelations you will never see coming. The most shocking, mind-bending plot twists in fiction.',
+    seoTitle: 'Books with Best Plot Twists | Most Shocking Endings',
+    keywords: 'books with plot twists, books with best plot twists, thriller books with plot twists, books with shocking endings, mind bending books',
+    searchVolume: 140,
+    difficulty: 80
+  },
+  'best-mystery-books': {
+    title: 'Best Mystery Books to Read',
+    description: 'The most compelling mystery novels — from cozy mysteries to dark psychological thrillers. These books keep you guessing until the very last page.',
+    seoTitle: 'Best Mystery Books | Top Mystery Novels to Read',
+    keywords: 'best mystery books, best mystery novels, top mystery books, must read mystery books, mystery book recommendations',
+    searchVolume: 130,
+    difficulty: 190
+  },
+  'psychological-thriller-books': {
+    title: 'Best Psychological Thriller Books',
+    description: 'Dark, twisty, and deeply unsettling — the best psychological thrillers that get inside your head and don\'t let go.',
+    seoTitle: 'Best Psychological Thriller Books | Dark and Twisty Reads',
+    keywords: 'psychological thriller books, best psychological thrillers, psychological thriller novels, dark thriller books, mind games thriller books',
+    searchVolume: 90,
+    difficulty: 130
+  },
+
+  // --- Fantasy ---
+  'best-fantasy-books': {
+    title: 'Best Fantasy Books of All Time',
+    description: 'From epic high fantasy to modern romantasy, these are the best fantasy novels ever written. Discover worlds that will stay with you forever.',
+    seoTitle: 'Best Fantasy Books | Top Fantasy Novels of All Time',
+    keywords: 'best fantasy books, best fantasy novels, top fantasy books, must read fantasy books, best fantasy books of all time',
+    searchVolume: 250,
+    difficulty: 240
+  },
+  'best-fantasy-series': {
+    title: 'Best Fantasy Book Series to Binge',
+    description: 'Once you start these fantasy series, you won\'t be able to stop. The best multi-book fantasy worlds to lose yourself in completely.',
+    seoTitle: 'Best Fantasy Series | Top Fantasy Book Series to Read',
+    keywords: 'best fantasy series, best fantasy book series, top fantasy series, must read fantasy series, fantasy series recommendations',
+    searchVolume: 160,
+    difficulty: 180
+  },
+  'sarah-j-maas-books-ranked': {
+    title: 'All Sarah J. Maas Books Ranked',
+    description: 'Every Sarah J. Maas book ranked — ACOTAR, Throne of Glass, Crescent City. Which series to start with and which books are her best.',
+    seoTitle: 'Sarah J. Maas Books Ranked | Best SJM Novels',
+    keywords: 'sarah j maas books ranked, best sarah j maas books, sarah j maas reading order, acotar books, sjm books ranked',
+    searchVolume: 130,
+    difficulty: 80
+  },
+  'books-like-a-court-of-thorns-and-roses': {
+    title: 'Books Like A Court of Thorns and Roses',
+    description: 'If you loved ACOTAR, these fantasy romance books share the same epic world-building, fae mythology, and slow-burn romance.',
+    seoTitle: 'Books Like ACOTAR | Fantasy Romance Recommendations',
+    keywords: 'books like a court of thorns and roses, books like acotar, books similar to acotar, fae romance books, fantasy romance books like acotar',
+    searchVolume: 110,
+    difficulty: 70
+  },
+
+  // --- Fiction & Literary ---
+  'best-fiction-books': {
+    title: 'Best Fiction Books to Read Right Now',
+    description: 'The most compelling, beautifully written fiction novels that every reader should experience. From literary masterpieces to gripping page-turners.',
+    seoTitle: 'Best Fiction Books | Top Novels to Read Right Now',
+    keywords: 'best fiction books, best fiction novels, top fiction books, must read fiction, best novels to read',
+    searchVolume: 200,
+    difficulty: 250
+  },
+  'best-books-of-2024': {
+    title: 'Best Books of 2024',
+    description: 'The standout fiction and nonfiction books that defined 2024 — Pulitzer winners, NYT bestsellers, and the books everyone was talking about.',
+    seoTitle: 'Best Books of 2024 | Top Reads of the Year',
+    keywords: 'best books of 2024, top books 2024, best novels 2024, must read books 2024, best fiction 2024',
+    searchVolume: 180,
+    difficulty: 90
+  },
+  'best-books-of-2025': {
+    title: 'Best Books of 2025',
+    description: 'The most anticipated and already acclaimed books of 2025 — the reads you need to add to your list right now.',
+    seoTitle: 'Best Books of 2025 | Top Reads of the Year',
+    keywords: 'best books of 2025, top books 2025, best novels 2025, must read books 2025, new books 2025',
+    searchVolume: 160,
+    difficulty: 50
+  },
+  'books-to-read-when-bored': {
+    title: 'Best Books to Read When You\'re Bored',
+    description: 'Can\'t find anything to read? These are the most addictive, page-turning books guaranteed to pull you out of a reading slump immediately.',
+    seoTitle: 'Best Books to Read When Bored | Addictive Page-Turners',
+    keywords: 'books to read when bored, books to read when you\'re bored, addictive books, unputdownable books, books to cure reading slump',
+    searchVolume: 140,
+    difficulty: 60
+  },
+  'books-everyone-should-read': {
+    title: 'Books Everyone Should Read in Their Lifetime',
+    description: 'The essential books that every person should read — stories that expand your perspective, challenge your thinking, and stay with you forever.',
+    seoTitle: 'Books Everyone Should Read | Essential Books for Your Lifetime',
+    keywords: 'books everyone should read, books everyone should read in their lifetime, must read books, essential books, books to read before you die',
+    searchVolume: 130,
+    difficulty: 170
+  },
+  'books-like-the-seven-husbands-of-evelyn-hugo': {
+    title: 'Books Like The Seven Husbands of Evelyn Hugo',
+    description: 'If Evelyn Hugo captivated you, these books share the same sweeping narratives, complex characters, and emotional gut-punches.',
+    seoTitle: 'Books Like The Seven Husbands of Evelyn Hugo | Similar Reads',
+    keywords: 'books like the seven husbands of evelyn hugo, books similar to evelyn hugo, books like taylor jenkins reid, books like evelyn hugo',
+    searchVolume: 120,
+    difficulty: 50
+  },
+  'unputdownable-books': {
+    title: 'Most Unputdownable Books',
+    description: 'These are the books that readers finish in one sitting because they simply cannot stop. The most addictive, gripping stories ever written.',
+    seoTitle: 'Most Unputdownable Books | Can\'t-Stop-Reading Novels',
+    keywords: 'unputdownable books, books you can\'t put down, addictive books, one sitting books, books you read in one day',
+    searchVolume: 90,
+    difficulty: 70
+  },
+  'best-books-for-book-clubs': {
+    title: 'Best Books for Book Clubs',
+    description: 'Books that spark the best conversations — perfect for book clubs with rich themes, complex characters, and plenty to discuss.',
+    seoTitle: 'Best Books for Book Clubs | Top Book Club Reads',
+    keywords: 'best books for book clubs, book club books, best book club reads, book club recommendations, books for book club discussions',
+    searchVolume: 85,
+    difficulty: 140
+  },
+  'books-that-will-make-you-cry': {
+    title: 'Books That Will Make You Cry',
+    description: 'These emotionally devastating novels have made millions of readers ugly cry. Beautiful, heartbreaking stories that stay with you long after the last page.',
+    seoTitle: 'Books That Will Make You Cry | Most Emotional Novels',
+    keywords: 'books that will make you cry, emotional books, sad books, heartbreaking books, books that made me cry, tearjerker books',
+    searchVolume: 80,
+    difficulty: 70
+  },
+
+  // --- Reading by mood / vibe ---
+  'cozy-books': {
+    title: 'Best Cozy Books to Read',
+    description: 'Warm, comforting, and utterly delightful — these are the best cozy books perfect for curling up with a hot drink and a blanket.',
+    seoTitle: 'Best Cozy Books | Comfort Reads for Every Mood',
+    keywords: 'cozy books, best cozy books, cozy reads, comfort reads, cozy fiction, feel good books to read',
+    searchVolume: 75,
+    difficulty: 60
+  },
+  'dark-romance-books': {
+    title: 'Best Dark Romance Books',
+    description: 'Intense, morally complex, and utterly addictive — the best dark romance novels that push the boundaries of conventional love stories.',
+    seoTitle: 'Best Dark Romance Books | Intense Dark Romance Reads',
+    keywords: 'dark romance books, best dark romance books, dark romance novels, dark romance recommendations, morally grey romance books',
+    searchVolume: 70,
+    difficulty: 80
   }
 };
 
