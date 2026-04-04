@@ -1,99 +1,97 @@
 /**
  * Generate Sitemap for SEO Pages
- * 
- * This script generates a comprehensive sitemap.xml file
- * with all pre-created SEO pages for search engine crawling
+ *
+ * Run with: npm run generate-sitemap
+ * Writes: public/sitemap.xml
+ *
+ * Priority scheme:
+ *   1.0  Homepage
+ *   0.9  Books Like index, high-priority book pages
+ *   0.8  Category pages, medium-priority book pages, high-volume SEO topics (searchVolume >= 35)
+ *   0.7  Low-volume SEO topics (searchVolume < 35)
+ *
+ * lastmod dates:
+ *   Homepage / Books Like index: today (re-run keeps them current)
+ *   Category pages:              today
+ *   Book pages:                  2026-03-21 (last content refresh)
+ *   SEO topic pages:             2026-03-21
  */
 
 import { getAllPopularBooks, getAllBookSlugs } from '../src/data/popularBooks.js';
 import { getAllCategorySlugs } from '../src/data/categoryBooks.js';
-import { getAllSEOTopicSlugs } from '../src/data/seoTopics.js';
+import { getAllSEOTopicSlugs, seoTopics } from '../src/data/seoTopics.js';
 import fs from 'fs';
 import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const BASE_URL = 'https://bookreccs.netlify.app';
+const TODAY = new Date().toISOString().slice(0, 10);          // e.g. 2026-04-04
+const CONTENT_DATE = '2026-03-21';   // last time book/topic content was refreshed
+
+function url(loc, lastmod, changefreq, priority) {
+    return `  <url>
+    <loc>${loc}</loc>
+    <lastmod>${lastmod}</lastmod>
+    <changefreq>${changefreq}</changefreq>
+    <priority>${priority}</priority>
+  </url>\n`;
+}
 
 function generateSitemap() {
-    const popularBooks = getAllPopularBooks();
     const bookSlugs = getAllBookSlugs();
     const categories = getAllCategorySlugs();
-    const seoTopics = getAllSEOTopicSlugs();
-    
+    const topicSlugs = getAllSEOTopicSlugs();
+
     let sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
         http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
-  
+
   <!-- Homepage -->
-  <url>
-    <loc>${BASE_URL}/</loc>
-    <changefreq>daily</changefreq>
-    <priority>1.0</priority>
-  </url>
-  
+${url(`${BASE_URL}/`, TODAY, 'daily', '1.0')}
   <!-- Books Like Index -->
-  <url>
-    <loc>${BASE_URL}/books-like</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  
+${url(`${BASE_URL}/books-like`, TODAY, 'weekly', '0.9')}
   <!-- Category Pages -->
 `;
 
-    // Add category pages
     categories.forEach(category => {
-        const categoryName = category.replace(/-/g, ' ');
-        sitemap += `  <url>
-    <loc>${BASE_URL}/best-books-for/${category}</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-`;
+        sitemap += url(`${BASE_URL}/best-books-for/${category}`, TODAY, 'monthly', '0.8');
     });
 
-    // Add Books Like pages for all popular books
-    sitemap += `
-  <!-- Books Like X Pages (AI-Recommended Books) -->
-`;
-    
-    bookSlugs.forEach(({ slug, title, seoPriority }) => {
+    sitemap += `\n  <!-- Books Like X Pages -->\n`;
+    bookSlugs.forEach(({ slug, seoPriority }) => {
         const priority = seoPriority === 'high' ? '0.9' : '0.8';
-        sitemap += `  <url>
-    <loc>${BASE_URL}/books-like/${slug}</loc>
-    <changefreq>monthly</changefreq>
-    <priority>${priority}</priority>
-  </url>
-`;
+        sitemap += url(`${BASE_URL}/books-like/${slug}`, CONTENT_DATE, 'monthly', priority);
     });
 
-    // Add SEO topic pages
-    sitemap += `
-  <!-- SEO Topic Pages -->
-`;
-    
-    seoTopics.forEach(topicSlug => {
-        sitemap += `  <url>
-    <loc>${BASE_URL}/seo-topic/${topicSlug}</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-`;
+    sitemap += `\n  <!-- SEO Topic Pages -->\n`;
+    topicSlugs.forEach(topicSlug => {
+        const topic = seoTopics[topicSlug];
+        // Higher search volume = higher priority
+        const priority = topic?.searchVolume >= 35 ? '0.8' : '0.7';
+        sitemap += url(`${BASE_URL}/seo-topic/${topicSlug}`, CONTENT_DATE, 'monthly', priority);
     });
 
-    sitemap += `</urlset>`;
-    
+    sitemap += `</urlset>\n`;
     return sitemap;
 }
 
-// Write sitemap to public directory
 const sitemapContent = generateSitemap();
-const sitemapPath = path.join(process.cwd(), 'public', 'sitemap.xml');
-fs.writeFileSync(sitemapPath, sitemapContent, 'utf8');
+const outPath = path.join(__dirname, '..', 'public', 'sitemap.xml');
+fs.writeFileSync(outPath, sitemapContent, 'utf8');
 
-const totalUrls = 1 + 1 + getAllCategorySlugs().length + getAllPopularBooks().length + getAllSEOTopicSlugs().length;
-console.log(`✅ Generated sitemap.xml with ${getAllPopularBooks().length} Books Like pages`);
-console.log(`✅ Added ${getAllCategorySlugs().length} category pages`);
-console.log(`✅ Added ${getAllSEOTopicSlugs().length} SEO topic pages`);
-console.log(`✅ Total URLs: ${totalUrls}`);
+const bookCount = getAllBookSlugs().length;
+const catCount = getAllCategorySlugs().length;
+const topicCount = getAllSEOTopicSlugs().length;
+const total = 2 + catCount + bookCount + topicCount;
+
+console.log(`✅ Generated sitemap.xml`);
+console.log(`   Homepage + Books Like index: 2`);
+console.log(`   Category pages:             ${catCount}`);
+console.log(`   Books Like X pages:         ${bookCount}`);
+console.log(`   SEO topic pages:            ${topicCount}`);
+console.log(`   Total URLs:                 ${total}`);
+console.log(`   Written to: ${outPath}`);

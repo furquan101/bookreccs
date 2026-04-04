@@ -216,6 +216,7 @@ export function getAllBookSlugs() {
     slug: book.title.toLowerCase().replace(/[^\w\s-]/g, '').replace(/\s+/g, '-').replace(/-+/g, '-'),
     title: book.title,
     author: book.author,
-    category: book.category
+    category: book.category,
+    seoPriority: book.seoPriority,
   }));
 }
