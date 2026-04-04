@@ -11,7 +11,9 @@
  *  - Social crawlers that do execute JS see the correct tags immediately
  */
 
-const DEFAULT_IMAGE = 'https://bookreccs.netlify.app/book-reccs-cover.png';
+import { SITE_IMAGE } from '../config/site.js';
+
+const DEFAULT_IMAGE = SITE_IMAGE;
 
 export default function SEOHead({
     title,

@@ -2,7 +2,7 @@ User-agent: *
 Allow: /
 
 # Sitemap
-Sitemap: https://bookreccs.netlify.app/sitemap.xml
+Sitemap: https://bookreccs.ink/sitemap.xml
 
 # Allow all pages
 Allow: /

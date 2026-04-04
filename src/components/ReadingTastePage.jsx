@@ -68,7 +68,7 @@ export default function ReadingTastePage() {
         fetchRecommendations();
     }, [profile, selectedBooks]);
 
-    const pageUrl = `https://bookreccs.netlify.app/reading-taste/${profile}`;
+    const pageUrl = `https://bookreccs.ink/reading-taste/${profile}`;
     const keywords = metadata.title 
         ? `${metadata.title.toLowerCase()}, book recommendations, reading taste, ${profile.replace(/-/g, ' ')} books, personalized reading list`
         : 'book recommendations, reading taste, personalized reading list';
@@ -80,7 +80,7 @@ export default function ReadingTastePage() {
                 description={metadata.description || "Personalized book recommendations based on your reading taste."}
                 keywords={keywords}
                 url={pageUrl}
-                image="https://bookreccs.netlify.app/book-reccs-cover.png"
+                image="https://bookreccs.ink/book-reccs-cover.png"
                 type="website"
             />
             <div className="min-h-screen w-full bg-background text-white">

@@ -87,7 +87,7 @@ export default function BooksLikePage() {
         fetchBookAndSimilar();
     }, [bookSlug]);
 
-    const pageUrl = `https://bookreccs.netlify.app/books-like/${bookSlug}`;
+    const pageUrl = `https://bookreccs.ink/books-like/${bookSlug}`;
     const seoTitle = `${similarBooksDetails.length || 12} Books Like ${bookTitle} (Based on Reading Taste, Not Genre) | Book Reccs`;
     const seoDescription = `Discover ${similarBooksDetails.length || 12} books like ${bookTitle}${bookAuthor ? ` by ${bookAuthor}` : ''}. These recommendations are based on reading taste and themes, not just genre. Find your next favorite read!`;
     const keywords = `books like ${bookTitle}, similar books to ${bookTitle}, ${bookTitle} recommendations, books similar to ${bookTitle}, reading recommendations`;
@@ -107,7 +107,7 @@ export default function BooksLikePage() {
                 "name": book.title,
                 "author": { "@type": "Person", "name": book.author },
                 ...(book.cover ? { "image": book.cover } : {}),
-                "url": `https://bookreccs.netlify.app/book/${encodeURIComponent(book.title)}/${encodeURIComponent(book.author)}`
+                "url": `https://bookreccs.ink/book/${encodeURIComponent(book.title)}/${encodeURIComponent(book.author)}`
             }
         }))
     } : undefined;

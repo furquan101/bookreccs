@@ -187,11 +187,11 @@ export default function BookDetailPage() {
 
     // Show skeleton loaders instead of full-page loading
 
-    const pageUrl = `https://bookreccs.netlify.app/book/${encodeURIComponent(decodedTitle)}/${encodeURIComponent(decodedAuthor)}`;
+    const pageUrl = `https://bookreccs.ink/book/${encodeURIComponent(decodedTitle)}/${encodeURIComponent(decodedAuthor)}`;
     const bookTitle = bookDetails?.title || decodedTitle;
     const bookAuthor = bookDetails?.author || decodedAuthor;
     const bookDescription = bookSummary || bookDetails?.description?.replace(/<[^>]*>/g, '').substring(0, 160) || `Discover ${bookTitle} by ${bookAuthor} - book recommendations, reviews, and similar reads.`;
-    const bookImage = bookDetails?.cover || 'https://bookreccs.netlify.app/book-reccs-cover.png';
+    const bookImage = bookDetails?.cover || 'https://bookreccs.ink/book-reccs-cover.png';
 
     return (
         <>

@@ -26,7 +26,7 @@ import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-const BASE_URL = 'https://bookreccs.netlify.app';
+const BASE_URL = 'https://bookreccs.ink';
 const TODAY = new Date().toISOString().slice(0, 10);          // e.g. 2026-04-04
 const CONTENT_DATE = '2026-03-21';   // last time book/topic content was refreshed
 

@@ -24,7 +24,7 @@ export default function BooksLikeIndexPage() {
         return acc;
     }, {});
 
-    const pageUrl = 'https://bookreccs.netlify.app/books-like';
+    const pageUrl = 'https://bookreccs.ink/books-like';
     const categories = Object.keys(booksByCategory).sort();
 
     return (
@@ -34,7 +34,7 @@ export default function BooksLikeIndexPage() {
                 description="Discover books similar to your favorites. Browse our collection of 'Books Like X' pages featuring recommendations based on reading taste, themes, and writing style—not just genre."
                 keywords="books like, similar books, book recommendations, reading taste, books similar to, find books like"
                 url={pageUrl}
-                image="https://bookreccs.netlify.app/book-reccs-cover.png"
+                image="https://bookreccs.ink/book-reccs-cover.png"
                 type="website"
             />
             <div className="min-h-screen w-full bg-background text-white">

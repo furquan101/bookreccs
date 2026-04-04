@@ -89,7 +89,7 @@ export default function CategoryBooksPage() {
         );
     }
 
-    const pageUrl = `https://bookreccs.netlify.app/best-books-for/${category}`;
+    const pageUrl = `https://bookreccs.ink/best-books-for/${category}`;
     const keywords = categoryData.title 
         ? `${categoryData.title.toLowerCase()}, book recommendations, best books, ${category.replace(/-/g, ' ')} reading list`
         : 'book recommendations, best books, reading list';
@@ -101,7 +101,7 @@ export default function CategoryBooksPage() {
                 description={categoryData.description}
                 keywords={keywords}
                 url={pageUrl}
-                image="https://bookreccs.netlify.app/book-reccs-cover.png"
+                image="https://bookreccs.ink/book-reccs-cover.png"
                 type="website"
             />
             <div className="min-h-screen w-full bg-background text-white">

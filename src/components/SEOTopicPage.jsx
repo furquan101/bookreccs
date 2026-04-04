@@ -58,8 +58,8 @@ export default function SEOTopicPage() {
                     title={topicData?.seoTitle || 'Loading... | Book Reccs'}
                     description={topicData?.description || 'Loading book recommendations...'}
                     keywords={topicData?.keywords || 'book recommendations'}
-                    url={`https://bookreccs.netlify.app/seo-topic/${topicSlug}`}
-                    image="https://bookreccs.netlify.app/book-reccs-cover.png"
+                    url={`https://bookreccs.ink/seo-topic/${topicSlug}`}
+                    image="https://bookreccs.ink/book-reccs-cover.png"
                     type="website"
                 />
                 <div className="min-h-screen w-full flex items-center justify-center bg-background text-white">
@@ -90,7 +90,7 @@ export default function SEOTopicPage() {
         );
     }
 
-    const pageUrl = `https://bookreccs.netlify.app/seo-topic/${topicSlug}`;
+    const pageUrl = `https://bookreccs.ink/seo-topic/${topicSlug}`;
 
     const structuredData = booksWithDetails.length > 0 ? {
         "@context": "https://schema.org",
@@ -107,7 +107,7 @@ export default function SEOTopicPage() {
                 "name": book.title,
                 "author": { "@type": "Person", "name": book.author },
                 ...(book.cover ? { "image": book.cover } : {}),
-                "url": `https://bookreccs.netlify.app/book/${encodeURIComponent(book.title)}/${encodeURIComponent(book.author)}`
+                "url": `https://bookreccs.ink/book/${encodeURIComponent(book.title)}/${encodeURIComponent(book.author)}`
             }
         }))
     } : undefined;
